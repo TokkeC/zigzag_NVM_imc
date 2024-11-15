@@ -375,6 +375,8 @@ class ImcUnit(OperationalArrayABC):
                 mapping.unit_mem_data_movement[layer_const_operand][0].data_elem_move_count.rd_out_to_low
                 / precharge_interval
             )
+
+            # WHY WL PRECHARGING? -> just activating WL?
             single_pe_precharge_energy = (
                 (tech_param["wl_cap"] * (tech_param["vdd"] ** 2))
                 + (tech_param["bl_cap"] * (tech_param["vdd"] ** 2) * group_depth)
@@ -386,6 +388,8 @@ class ImcUnit(OperationalArrayABC):
                 if loop_name in weight_r_layer_dims:
                     mapped_group_depth *= loop_size
         else:
+
+            #WHY? We need to precharge at least once to read out?
             energy_precharging = 0
             mapped_group_depth = 1
         return energy_precharging, mapped_group_depth

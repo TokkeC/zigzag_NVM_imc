@@ -44,6 +44,9 @@ class ImcArray(ImcUnit):
             self.topsmm2_peak,
         ) = self.get_macro_level_peak_performance()
 
+    """
+    I THINK THE ADC COST CAN STAY THE SAME FOR RERAM -> JUST USING NORMAL ADCs
+    """
     def get_adc_cost(self) -> tuple[float, float, float]:
         """single ADC and analog accumulation cost calculation"""
         # area (mm^2)
@@ -55,6 +58,7 @@ class ImcArray(ImcUnit):
             k1 = -0.0369
             k2 = 1.206
             adc_area = 10 ** (k1 * self.adc_resolution + k2) * 2**self.adc_resolution * (10**-6)  # unit: mm^2
+
         # delay (ns)
         if self.adc_resolution == 0:
             adc_delay: float = 0
@@ -62,6 +66,7 @@ class ImcArray(ImcUnit):
             k3 = 0.00653  # ns
             k4 = 0.640  # ns
             adc_delay = self.adc_resolution * (k3 * self.bitline_dim_size + k4)  # unit: ns
+
         # energy (fJ)
         if self.adc_resolution == 0:
             adc_energy: float = 0
@@ -73,6 +78,9 @@ class ImcArray(ImcUnit):
             adc_energy = adc_energy / 1000  # unit: pJ
         return adc_area, adc_delay, adc_energy
 
+    """
+    I THINK THE DAC COST CAN STAY THE SAME FOR RERAM -> JUST USING NORMAL DACs
+    """
     def get_dac_cost(self) -> tuple[float, float, float]:
         """single DAC cost calculation"""
         # area (mm^2)
@@ -119,6 +127,7 @@ class ImcArray(ImcUnit):
             area_adcs = 0
 
         # area of multiplier array
+        # WHY IS THERE AREA FOR THE ANALOG CASE????
         if self.is_aimc:
             nb_of_1b_multiplier = (
                 self.weight_precision * self.wordline_dim_size * self.bitline_dim_size * self.nb_of_banks

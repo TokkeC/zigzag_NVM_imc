@@ -12,6 +12,9 @@ from zigzag.workload.layer_node import LayerNode
 class ImcUnit(OperationalArrayABC):
     """definition of general initialization function for D/AIMC"""
 
+    """
+    For SRAM/CMOS technology parameters
+    """
     TECH_PARAM_28NM = {
         "tech_node": 0.028,  # unit: um
         "vdd": 0.9,  # unit: V
@@ -22,7 +25,7 @@ class ImcUnit(OperationalArrayABC):
         "dff_cap": 0.7 * 3 / 1e3,  # unit: pF
         "nd2_area": 0.614 / 1e6,  # unit: mm^2
         "xor2_area": 0.614 * 2.4 / 1e6,  # unit: mm^2
-        "dff_area": 0.614 * 6 / 1e6,  # unit: mm^2
+        "dff_area": 0.614 * 6 / 1e6,  # unit: mm^2          <-- SRAM CELL AREA?
         "nd2_dly": 0.0478,  # unit: ns
         "xor2_dly": 0.0478 * 2.4,  # unit: ns
     }
@@ -72,6 +75,14 @@ class ImcUnit(OperationalArrayABC):
         self.mapped_group_depth = None
         self.cells_w_cost = None
 
+    """
+    All parameters for the technology basically from a dictionary!
+    
+    ENERGY
+    
+    CMOS Components, so same for SRAM and ReRAM
+    CMOS adders, multipliers needed for DIGITAL arrays
+    """
     def get_1b_adder_energy(self) -> float:
         """energy of 1b full adder
         Assume a 1b adder has 3 ND2 gate and 2 XOR2 gate"""
@@ -89,10 +100,17 @@ class ImcUnit(OperationalArrayABC):
         why 0.5: considering weight stays constant during multiplication"""
         return 0.5 * self.tech_param["nd2_cap"] * (self.tech_param["vdd"] ** 2)  # unit: pJ
 
+    """ CMOS DFF reg -> SRAM CELL???? """
     def get_1b_reg_energy(self) -> float:
         """energy of 1b DFF"""
         return self.tech_param["dff_cap"] * (self.tech_param["vdd"] ** 2)  # unit: pJ
 
+    """
+    AREA
+
+    CMOS Components, so same for SRAM and ReRAM
+    CMOS adders, multipliers needed for DIGITAL arrays
+    """
     def get_1b_adder_area(self) -> float:
         """area of 1b full adder
         Assume a 1b adder has 3 ND2 gate and 2 XOR2 gate"""
@@ -108,6 +126,12 @@ class ImcUnit(OperationalArrayABC):
         """area of 1b DFF"""
         return self.tech_param["dff_area"]
 
+    """
+    LATENCY
+
+    CMOS Components, so same for SRAM and ReRAM
+    CMOS adders, multipliers needed for DIGITAL arrays
+    """
     def get_1b_adder_dly_in2sum(self) -> float:
         """delay of 1b adder: input to sum-out"""
         adder_dly = 2 * self.tech_param["xor2_dly"]

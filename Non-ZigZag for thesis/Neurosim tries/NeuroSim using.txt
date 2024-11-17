@@ -1,0 +1,13 @@
+Using MLP Neurosim, consists of 2 Arrays with a hidden layer inbetween (as easy as possible)
+
+RealDevice represents analog eNVM -> ReRAM falls under this
+They say they use Ag:Si as a reference, WHICH IS RERAM
+
+IdealDevice can also be used, as this one represents the same without non-ideal synaptic properties
+
+DigitalNVM is for ReRAM with eNVM but digitally
+
+SRAM is self explenatory
+
+For RERAM -> Crossbar array ANALOG (A kind of array); Psuedo-crossbar Array ANALOG, has an access SELECTOR (not neceserraly trans) (B kind of array);
+			 Crossbar array with multiple cells as one synapse DIGITAL (D kind of array); 1T1R (pseudo crossbar) array DIGITAL, has a transistor as access device (E kind of array)

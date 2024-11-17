@@ -1,22 +1,32 @@
 import logging
 import re
 
-from zigzag.api import get_hardware_performance_zigzag
-from zigzag.parser.arguments import get_arg_parser
+from zigzag.api import get_hardware_performance_zigzag #Actual ZigZag API
+from zigzag.utils import pickle_load # Loading in of results
+from zigzag.visualization.results.print_mapping import print_mapping # Also already printed in txt file
+from zigzag.visualization.results.plot_cme import bar_plot_cost_model_evaluations_breakdown # Bar plot visualizations
 
-parser = get_arg_parser()
-args = parser.parse_args()
+
+
+accelerator_rram = "zigzag/inputs/hardware/aimc_rram.yaml"
+workload_rram = "zigzag/inputs/workload/resnet18.onnx"
+mapping_rram = "zigzag/inputs/mapping/default_imc.yaml"
 
 # Initialize the logger
 logging_level = logging.INFO
 logging_format = "%(asctime)s - %(name)s.%(funcName)s +%(lineno)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging_level, format=logging_format)
 
-hw_name = args.accelerator.split(".")[-1]
-workload_name = re.split(r"/|\.", args.model)[-1]
-if workload_name == "onnx":
-    workload_name = re.split(r"/|\.", args.model)[-2]
-experiment_id = f"{hw_name}-{workload_name}"
+""" 
+    Just naming conventions, it did a couple weird things, so fixed that
+"""
+hw_name = accelerator_rram.split(".")[-1]
+if hw_name == "yaml":
+    hw_name = re.split(r"/|\.",accelerator_rram)[-2]
+workload_name = re.split(r"/|\.", workload_rram)[-1]
+if workload_name == "onnx" or "yaml":
+    workload_name = re.split(r"/|\.", workload_rram)[-2]
+experiment_id = f"RRAM_tests_{hw_name}-{workload_name}"
 pickle_name = f"{experiment_id}-saved_list_of_cmes"
 
 
@@ -25,10 +35,19 @@ pickle_filename = f"outputs/{pickle_name}.pickle"
 
 
 get_hardware_performance_zigzag(
-    accelerator=args.accelerator,
-    workload=args.model,
-    mapping=args.mapping,
+    accelerator=accelerator_rram,
+    workload=workload_rram,
+    mapping=mapping_rram,
     opt="latency",
     dump_folder=f"outputs/{experiment_id}",
     pickle_filename=f"outputs/{pickle_name}.pickle",
 )
+
+
+"""
+    Plotting results from the ZigZag hardware performance estimation
+"""
+cmes = pickle_load(pickle_filename)
+print_mapping(cmes[0])
+bar_plot_cost_model_evaluations_breakdown(cmes[0:5], save_path = f"outputs/{experiment_id}/plot_breakdown.png")
+# Only plotting 6 layers to have a good plot!

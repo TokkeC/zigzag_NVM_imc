@@ -136,16 +136,16 @@ dmypy.json
 # vs code settigs
 .vscode/
 
-# result pickle files
-output*
-output*/*.pkl
-output*/*.pickle
-
-# result json files
-outputs*/*.json
-
-# result png files
-outputs*/*.png
+## result pickle files
+#output*
+#output*/*.pkl
+#output*/*.pickle
+#
+## result json files
+#outputs*/*.json
+#
+## result png files
+#outputs*/*.png
 
 
 # docs makefile and make.bat

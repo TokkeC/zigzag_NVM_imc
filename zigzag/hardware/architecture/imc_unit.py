@@ -343,6 +343,10 @@ class ImcUnit(OperationalArrayABC):
         mapped_rows_for_adder_per_macro = math.ceil(mapped_rows_for_adder_per_macro)
         return mapped_rows_total_per_macro, mapped_rows_for_adder_per_macro
 
+
+    """
+        NEEDS TO BE CHECKED FOR RERAM
+    """
     def get_precharge_energy(
         self, tech_param: dict[str, float], layer: LayerNode, mapping: Mapping
     ) -> tuple[float, float]:

@@ -8,7 +8,7 @@ from zigzag.visualization.results.plot_cme import bar_plot_cost_model_evaluation
 
 
 
-accelerator_rram = "zigzag/inputs/hardware/aimc_rram.yaml"
+accelerator_rram = "zigzag/inputs/hardware/aimc_rram_wan_nature.yaml"
 workload_rram = "zigzag/inputs/workload/resnet18.onnx"
 mapping_rram = "zigzag/inputs/mapping/default_imc.yaml"
 
@@ -42,7 +42,6 @@ get_hardware_performance_zigzag(
     dump_folder=f"outputs/{experiment_id}",
     pickle_filename=f"outputs/{pickle_name}.pickle",
 )
-
 
 """
     Plotting results from the ZigZag hardware performance estimation

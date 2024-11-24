@@ -41,6 +41,13 @@ class CostModelStage(Stage):
         """! Run the cost model stage by calling the internal zigzag cost model with the correct inputs."""
         operational_array = self.accelerator.operational_array
         if isinstance(operational_array, ImcArray):
+            ###############################################
+            """
+                I added this to see the max utilization
+            """
+            print("tops_peak, topsw_peak, topsmm2_peak")
+            print(self.accelerator.operational_array.get_macro_level_peak_performance())
+            ###############################################
             cme = CostModelEvaluationForIMC(
                 accelerator=self.accelerator,
                 layer=self.layer,

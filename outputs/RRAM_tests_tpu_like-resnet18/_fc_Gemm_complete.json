@@ -1,0 +1,373 @@
+{
+    "outputs": {
+        "memory": {
+            "utilization": {
+                "O": [
+                    0.5,
+                    0.000720977783203125,
+                    0.0004108096
+                ],
+                "I": [
+                    0.000720977783203125,
+                    0.0004108096
+                ],
+                "W": [
+                    0.5,
+                    0.0004108096
+                ]
+            },
+            "word_accesses": {
+                "O": [
+                    {
+                        "rd ^": 32000,
+                        "wr v": 0,
+                        "rd v": 512000,
+                        "wr ^": 512000
+                    },
+                    {
+                        "rd ^": 3,
+                        "wr v": 0,
+                        "rd v": 0,
+                        "wr ^": 4
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 0,
+                        "wr ^": 125
+                    }
+                ],
+                "I": [
+                    {
+                        "rd ^": 0,
+                        "wr v": 2,
+                        "rd v": 64,
+                        "wr ^": 0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 64,
+                        "wr ^": 0
+                    }
+                ],
+                "W": [
+                    {
+                        "rd ^": 0,
+                        "wr v": 512000,
+                        "rd v": 512000,
+                        "wr ^": 0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 64000,
+                        "wr ^": 0
+                    }
+                ]
+            }
+        },
+        "energy": {
+            "energy_total": 45108639.12,
+            "operational_energy": 20480.0,
+            "memory_energy": 45088159.12,
+            "memory_energy_breakdown_per_level": {
+                "O": [
+                    22176.0,
+                    2762.08,
+                    93750
+                ],
+                "I": [
+                    27391.04,
+                    44800
+                ],
+                "W": [
+                    97280.0,
+                    44800000
+                ]
+            },
+            "memory_energy_breakdown_per_level_per_operand": {
+                "O": [
+                    {
+                        "rd ^": 672.0,
+                        "wr v": 0.0,
+                        "rd v": 10752.0,
+                        "wr ^": 10752.0
+                    },
+                    {
+                        "rd ^": 1248.48,
+                        "wr v": 0.0,
+                        "rd v": 0.0,
+                        "wr ^": 1513.6
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 0,
+                        "wr ^": 93750
+                    }
+                ],
+                "I": [
+                    {
+                        "rd ^": 0.0,
+                        "wr v": 756.8,
+                        "rd v": 26634.24,
+                        "wr ^": 0.0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 44800,
+                        "wr ^": 0
+                    }
+                ],
+                "W": [
+                    {
+                        "rd ^": 0.0,
+                        "wr v": 48640.0,
+                        "rd v": 48640.0,
+                        "wr ^": 0.0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 44800000,
+                        "wr ^": 0
+                    }
+                ]
+            }
+        },
+        "latency": {
+            "data_onloading": 7936,
+            "computation": 55616,
+            "data_offloading": 125
+        },
+        "spatial": {
+            "mac_utilization": {
+                "ideal": 0.9765625,
+                "stalls": 0.008990218642117376,
+                "stalls_onloading": 0.007867573011077543,
+                "stalls_onloading_offloading": 0.007852128712093849
+            }
+        }
+    },
+    "inputs": {
+        "accelerator": {
+            "id": 0,
+            "name": "tpu_like",
+            "operational_array": {
+                "operational_unit": {
+                    "energy_cost": 0.04,
+                    "area": 1
+                },
+                "dimensions": {
+                    "D1": 32,
+                    "D2": 32
+                }
+            },
+            "memory_hierarchy": [
+                "MemoryLevel(instance=rf_128B,operands=[I2], served_dimensions=set())",
+                "MemoryLevel(instance=rf_2B,operands=[O], served_dimensions=set())",
+                "MemoryLevel(instance=sram_2MB,operands=[I1, O], served_dimensions={D1, D2})",
+                "MemoryLevel(instance=dram,operands=[I1, I2, O], served_dimensions={D1, D2})"
+            ],
+            "mem_hierarchy_dict": {
+                "I2": [
+                    "MemoryLevel(instance=rf_128B,operands=[I2], served_dimensions=set())",
+                    "MemoryLevel(instance=dram,operands=[I1, I2, O], served_dimensions={D1, D2})"
+                ],
+                "O": [
+                    "MemoryLevel(instance=rf_2B,operands=[O], served_dimensions=set())",
+                    "MemoryLevel(instance=sram_2MB,operands=[I1, O], served_dimensions={D1, D2})",
+                    "MemoryLevel(instance=dram,operands=[I1, I2, O], served_dimensions={D1, D2})"
+                ],
+                "I1": [
+                    "MemoryLevel(instance=sram_2MB,operands=[I1, O], served_dimensions={D1, D2})",
+                    "MemoryLevel(instance=dram,operands=[I1, I2, O], served_dimensions={D1, D2})"
+                ]
+            },
+            "dataflows": null,
+            "mem_size_dict": {
+                "I2": [
+                    1024,
+                    10000000000
+                ],
+                "O": [
+                    16,
+                    16777216,
+                    10000000000
+                ],
+                "I1": [
+                    16777216,
+                    10000000000
+                ]
+            },
+            "mem_r_bw_dict": {
+                "I2": [
+                    8,
+                    64
+                ],
+                "O": [
+                    16,
+                    2048,
+                    64
+                ],
+                "I1": [
+                    2048,
+                    64
+                ]
+            },
+            "mem_w_bw_dict": {
+                "I2": [
+                    8,
+                    64
+                ],
+                "O": [
+                    16,
+                    2048,
+                    64
+                ],
+                "I1": [
+                    2048,
+                    64
+                ]
+            },
+            "mem_r_bw_min_dict": {
+                "I2": [
+                    8,
+                    64
+                ],
+                "O": [
+                    16,
+                    64,
+                    64
+                ],
+                "I1": [
+                    64,
+                    64
+                ]
+            },
+            "mem_w_bw_min_dict": {
+                "I2": [
+                    8,
+                    64
+                ],
+                "O": [
+                    16,
+                    64,
+                    64
+                ],
+                "I1": [
+                    64,
+                    64
+                ]
+            },
+            "mem_sharing_list": [
+                {
+                    "I1": 1,
+                    "I2": 1,
+                    "O": 2
+                },
+                {
+                    "I1": 0,
+                    "O": 1
+                }
+            ]
+        },
+        "layer": {
+            "name": "/fc/Gemm",
+            "type": "Gemm",
+            "equation": "O[d][k] = I[d][c] * W[c][k]",
+            "equation_relations": [],
+            "loop_dimensions": {
+                "C": 512,
+                "D": 1,
+                "K": 1000
+            },
+            "operand_precision": {
+                "W": 8,
+                "I": 8,
+                "O_final": 8,
+                "O": 16
+            },
+            "user_spatial_mapping": {
+                "D1": {
+                    "K": 32
+                },
+                "D2": {
+                    "C": 32
+                }
+            },
+            "memory_operand_links": {
+                "O": "O",
+                "W": "I2",
+                "I": "I1"
+            }
+        },
+        "spatial_mapping": {
+            "O": [
+                [],
+                [
+                    "(K, 31)",
+                    "(C, 32)"
+                ],
+                [],
+                []
+            ],
+            "W": [
+                [],
+                [
+                    "(K, 31)",
+                    "(C, 32)"
+                ],
+                []
+            ],
+            "I": [
+                [
+                    "(K, 31)",
+                    "(C, 32)"
+                ],
+                [],
+                []
+            ]
+        },
+        "temporal_mapping": {
+            "O": [
+                [
+                    "(C, 2)",
+                    "(C, 4)",
+                    "(C, 2)"
+                ],
+                [
+                    "(K, 4)",
+                    "(K, 4)",
+                    "(K, 2)"
+                ],
+                []
+            ],
+            "I": [
+                [
+                    "(C, 2)",
+                    "(C, 4)",
+                    "(C, 2)",
+                    "(K, 4)",
+                    "(K, 4)",
+                    "(K, 2)"
+                ],
+                []
+            ],
+            "W": [
+                [
+                    "(C, 2)",
+                    "(C, 4)",
+                    "(C, 2)",
+                    "(K, 4)"
+                ],
+                [
+                    "(K, 4)",
+                    "(K, 2)"
+                ]
+            ]
+        }
+    }
+}

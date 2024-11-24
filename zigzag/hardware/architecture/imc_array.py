@@ -114,6 +114,11 @@ class ImcArray(ImcUnit):
             ), "No cells area given by user yet `auto_cost_extraction` is set to `false`"
             area_cells = self.total_unit_count * self.cells_area
 
+            """
+                FOR RERAM THIS IS FINE
+                We can just give a cell size for a certain ReRAM cell, and it will calculate it correctly
+            """
+
         # area of DACs
         if self.is_aimc:
             area_dacs = self.get_dac_cost()[0] * self.bitline_dim_size * self.nb_of_banks
@@ -212,11 +217,20 @@ class ImcArray(ImcUnit):
             "adders_pv": area_adders_pv,
             "accumulators": area_accumulators,
         }
+
+        ###############################################
+        """
+            I added this to see the area
+        """
+        print(self.area_breakdown)
+        ###############################################
+
         self.area = sum([v for v in self.area_breakdown.values()])
 
     def get_tclk(self):
         """! get clock cycle time of imc macros (worst path: dacs -> mults -> adcs -> adders -> accumulators)"""
         # delay of cells
+        # might be needed to model for ReRAM
         dly_cells = 0  # cells are not on critical paths
 
         # delay of dacs
@@ -413,7 +427,7 @@ class ImcArray(ImcUnit):
         peak_energy_breakdown = {  # unit: pJ (the unit is borrowed from CACTI)
             "local_bl_precharging": energy_local_bl_precharging,
             "dacs": energy_dacs,
-            "adcs": energy_adcs,
+            "adcs": energy_adcs, # temporary
             "mults": energy_mults,
             "analog_bl_addition": energy_analog_bl_addition,
             "adders_regular": energy_adders_regular,

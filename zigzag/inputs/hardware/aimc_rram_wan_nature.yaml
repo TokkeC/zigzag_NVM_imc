@@ -1,4 +1,4 @@
-name: aimc_rram # Modelling A 22nm 4Mb 8b-Precision ReRAM Computing-in-Memory Macro with 11.91 to 195.7TOPS/W for Tiny AI Edge Devices
+name: aimc_rram_wan_nature # lightCIM
 
 memories:
   cells:
@@ -6,8 +6,8 @@ memories:
     r_bw: 8
     w_bw: 8
     r_cost: 0 #nj # is together in the multiplication etc?
-    w_cost: 0.095 # from normal register?
-    area: 0.000010 # in mm^2
+    w_cost: 102.4 #because 8*8 cells...
+    area: 0.00010816 # in mm^2
     r_port: 0
     w_port: 0
     rw_port: 1
@@ -103,8 +103,8 @@ memories:
 operational_array:
   is_imc: True
   imc_type: analog
-  input_precision: [8, 8] # unit: bit
+  input_precision: [8, 4] # unit: bit
   bit_serial_precision: 2 # unit: bit
-  adc_resolution: 14 # unit: bit, OUTPUT
+  adc_resolution: 10 # unit: bit, OUTPUT
   dimensions: [D1, D2, D3]
-  sizes: [128, 512, 8] #1024x512 (1 bit per cell, and we see it as 8 bits per cell). This is per subarray, and thus 8 macros
+  sizes: [32, 32, 16128] #256x256(subarray) (1 bit per cell, and we see it as 8 bits per cell). This is per subarray, and thus 8 macros

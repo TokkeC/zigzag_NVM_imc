@@ -4,7 +4,7 @@
             "utilization": {
                 "O": [
                     1.0,
-                    0.1982421875,
+                    0.283111572265625,
                     0.0007702016
                 ],
                 "W": [
@@ -13,7 +13,7 @@
                 ],
                 "I": [
                     1.0,
-                    0.1982421875,
+                    0.283111572265625,
                     0.0007702016
                 ]
             },
@@ -55,39 +55,39 @@
                 "I": [
                     {
                         "rd ^": 0,
-                        "wr v": 7375872,
-                        "rd v": 7375872,
+                        "wr v": 1843968,
+                        "rd v": 1843968,
                         "wr ^": 0
                     },
                     {
                         "rd ^": 0,
-                        "wr v": 32928,
-                        "rd v": 131712,
+                        "wr v": 3696,
+                        "rd v": 32928,
                         "wr ^": 0
                     },
                     {
                         "rd ^": 0,
                         "wr v": 0,
-                        "rd v": 263424,
+                        "rd v": 29568,
                         "wr ^": 0
                     }
                 ]
             }
         },
         "energy": {
-            "energy_total": 1362421530.0666163,
-            "operational_energy": 409832026.5786164,
+            "energy_total": 31119831026.695866,
+            "operational_energy": 30477755563.015865,
             "operational_energy_breakdown": {
                 "local_bl_precharging": 0,
-                "dacs": 2389782.528000001,
+                "dacs": 597445.6320000002,
                 "adcs": 378229542.42834437,
-                "mults": 1070622.572544,
-                "analog_bl_addition": 2447137.308672,
+                "mults": 2810384.2529280004,
+                "analog_bl_addition": 30070423248.961536,
                 "adders_regular": 0,
                 "adders_pv": 17435853.324287996,
                 "accumulators": 8259088.416767998
             },
-            "memory_energy": 952589503.4879999,
+            "memory_energy": 642075463.6800001,
             "memory_energy_breakdown_per_level": {
                 "O": [
                     1416167.424,
@@ -95,13 +95,13 @@
                     75264000
                 ],
                 "W": [
-                    107898470.4,
+                    13487308.8,
                     92198400
                 ],
                 "I": [
-                    309786.624,
-                    67273221.12,
-                    184396800
+                    77446.656,
+                    15101882.88,
+                    20697600
                 ]
             },
             "memory_energy_breakdown_per_level_per_operand": {
@@ -128,7 +128,7 @@
                 "W": [
                     {
                         "rd ^": 0,
-                        "wr v": 107898470.4,
+                        "wr v": 13487308.8,
                         "rd v": 0,
                         "wr ^": 0.0
                     },
@@ -142,40 +142,40 @@
                 "I": [
                     {
                         "rd ^": 0.0,
-                        "wr v": 154893.312,
-                        "rd v": 154893.312,
+                        "wr v": 38723.328,
+                        "rd v": 38723.328,
                         "wr ^": 0.0
                     },
                     {
                         "rd ^": 0.0,
-                        "wr v": 12459955.2,
-                        "rd v": 54813265.92,
+                        "wr v": 1398566.4,
+                        "rd v": 13703316.48,
                         "wr ^": 0.0
                     },
                     {
                         "rd ^": 0,
                         "wr v": 0,
-                        "rd v": 184396800,
+                        "rd v": 20697600,
                         "wr ^": 0
                     }
                 ]
             }
         },
         "latency": {
-            "data_onloading": 589.0,
-            "computation": 5280994.0,
-            "data_offloading": 225.0,
+            "data_onloading": 265.0,
+            "computation": 1592973.0,
+            "data_offloading": 898.0,
             "computation_breakdown": {
-                "mac_computation": 4214784.0,
-                "memory_stalling": 1066210
+                "mac_computation": 1053696.0,
+                "memory_stalling": 539277
             }
         },
         "clock": {
-            "tclk (ns)": 8.22156,
+            "tclk (ns)": 10278.18764,
             "tclk_breakdown (ns)": {
                 "cells": 0,
                 "dacs": 0,
-                "adcs": 5.95584,
+                "adcs": 10275.92192,
                 "mults": 0.0478,
                 "adders_regular": 0,
                 "adders_pv": 1.3384,
@@ -183,20 +183,20 @@
             }
         },
         "area (mm^2)": {
-            "total_area": 166.86082671630737,
+            "total_area": 165.18347192939834,
             "total_area_breakdown:": {
-                "imc_area": 166.86082671502737,
+                "imc_area": 165.18347192811834,
                 "mem_area": 1.28e-09
             },
             "total_area_breakdown_further": {
                 "imc_area_breakdown": {
-                    "cells": 0.00528482304,
+                    "cells": 0.04227858432,
                     "dacs": 0,
-                    "adcs": 0.17511334798739597,
-                    "mults": 20.280508416,
+                    "adcs": 2.8018135677983356,
+                    "mults": 162.244067328,
                     "adders_regular": 0,
-                    "adders_pv": 93.92410460159999,
-                    "accumulators": 52.4758155264
+                    "adders_pv": 0.06114850559999999,
+                    "accumulators": 0.0341639424
                 },
                 "mem_area_breakdown": {
                     "cells": 1.28e-09,
@@ -209,10 +209,10 @@
         },
         "spatial": {
             "mac_utilization": {
-                "ideal": 2.7522169582118562e-05,
-                "stalls": 2.1965561786284932e-05,
-                "stalls_onloading": 2.1963112195718593e-05,
-                "stalls_onloading_offloading": 2.196217658801683e-05
+                "ideal": 1.5184645286686102e-05,
+                "stalls": 1.0044112486526765e-05,
+                "stalls_onloading": 1.0042441869952889e-05,
+                "stalls_onloading_offloading": 1.003678481635193e-05
             }
         }
     },
@@ -222,9 +222,9 @@
             "name": "aimc_rram_lightCIM",
             "operational_array": {
                 "operational_unit: ImcArray, dimensions": {
-                    "D1": 16,
-                    "D2": 16,
-                    "D3": 16128
+                    "D1": 168,
+                    "D2": 196608,
+                    "D3": 1
                 }
             },
             "memory_hierarchy": [
@@ -369,7 +369,7 @@
             },
             "user_spatial_mapping": {
                 "D1": {
-                    "K": 16
+                    "K": 64
                 },
                 "D2": {
                     "FX": 7
@@ -391,7 +391,7 @@
                     "(FX, 7)"
                 ],
                 [
-                    "(K, 16)"
+                    "(K, 64)"
                 ],
                 [],
                 []
@@ -399,7 +399,7 @@
             "W": [
                 [],
                 [
-                    "(K, 16)",
+                    "(K, 64)",
                     "(FX, 7)",
                     "(FY, 1)"
                 ],
@@ -407,7 +407,7 @@
             ],
             "I": [
                 [
-                    "(K, 16)",
+                    "(K, 64)",
                     "(FY, 1)"
                 ],
                 [
@@ -421,39 +421,39 @@
             "O": [
                 [],
                 [
+                    "(OX, 16)",
                     "(OY, 7)",
-                    "(OY, 16)",
                     "(C, 3)",
                     "(FY, 7)"
                 ],
                 [
-                    "(OX, 112)",
-                    "(K, 4)"
+                    "(OY, 16)",
+                    "(OX, 7)"
                 ]
             ],
             "W": [
                 [
-                    "(OY, 7)",
-                    "(OY, 16)"
+                    "(OX, 16)",
+                    "(OY, 7)"
                 ],
                 [
                     "(C, 3)",
                     "(FY, 7)",
-                    "(OX, 112)",
-                    "(K, 4)"
+                    "(OY, 16)",
+                    "(OX, 7)"
                 ]
             ],
             "I": [
                 [],
                 [
+                    "(OX, 16)",
                     "(OY, 7)",
-                    "(OY, 16)",
                     "(C, 3)",
                     "(FY, 7)"
                 ],
                 [
-                    "(OX, 112)",
-                    "(K, 4)"
+                    "(OY, 16)",
+                    "(OX, 7)"
                 ]
             ]
         }

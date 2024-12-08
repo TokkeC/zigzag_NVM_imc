@@ -8,7 +8,7 @@ from zigzag.visualization.results.plot_cme import bar_plot_cost_model_evaluation
 
 
 
-accelerator_rram = "zigzag/inputs/hardware/aimc_rram_wan_nature.yaml"
+accelerator_rram = "zigzag/inputs/hardware/aimc_rram_lightcim_2.yaml"
 workload_rram = "zigzag/inputs/workload/resnet18.onnx"
 mapping_rram = "zigzag/inputs/mapping/default_imc.yaml"
 

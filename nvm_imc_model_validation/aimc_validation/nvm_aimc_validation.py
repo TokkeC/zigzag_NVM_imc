@@ -1,5 +1,6 @@
 import pdb # PYTHON DEBUGGER
 from nvm_aimc1_validation_subfunc import * # The actual validation function for the first paper
+from nvm_aimc2_validation_subfunc import * # Second paper
 
 """
 Light-CIM 2024 (28 nm technology) 
@@ -94,6 +95,109 @@ nvm_aimc1 = {  # https://ieeexplore.ieee.org/document/10614392 (28nm)
 
 # NOT changed compared to IMC VALIDATION!!!
 cacti1 = {  # 131072B, bw: 1024
+    'delay': 0.106473,  # ns
+    'r_energy': None,  # not used
+    'w_energy': None,  # not used
+    'area': 0.24496704  # mm2
+}
+
+
+"""
+TL-nvSRAM-CIM 2023 (28 nm technology) 
+(Assume 100% input toggle rate, 0% weight sparsity)
+
+This work does integrate nvm (ReRAM) as the first level cache and leaves the CIM as an SRAM array.
+"""
+nvm_aimc2 = {  # https://ieeexplore.ieee.org/document/10323889 (28nm)
+    'paper_idx': 'TLnvSRAMCIM2023',
+
+
+    'input_toggle_rate': 1,  # Assuming full usage all the time
+    'weight_sparsity': 0,  # Assuming no sparsity
+
+    #####################
+    # The precisions are in terms of trits (+1, -1, 0) instead of bits... --> Converting to bits
+    # Base 3 instead of Base 2 -> 8 Bits is +- 5 trits
+    # THE CONVERSION ALSO NEEDS TO HAPPEN IN HARDWARE, AND THUS HAS AN ENERGY IMPACT!!
+    'activation_precision': 5, # On bitline? 16 bit?
+    'weight_precision': 5,  # 5 trit --> 8 bit W
+    'output_precision': 5,  # Output/Sensing precision (Reading of bitlines for results) --> IN BITS
+    'input_precision': 5, # 5 Trits in (time multiplexed serially)
+    #####################
+
+    # 256x320 macro, activating max 16 rows (the Compute Blocks), 1 row read at a time (so total cycles calculation)
+    'input_channel': 256,  # how many input in parallel (per bank) --> GIVEN IN BITS NOW
+    'output_channel': 320,  # how many output in parallel (per bank) --> GIVEN IN BITS NOW
+
+
+    'adc_resolution': 5, # 5 BIT ADCs, shared by every 5 CBLs (10 columns of SRAM) --> Single array should be 32 ADCs (320/10)
+    'dac_resolution': 5, # 5 TRIT DACs --> Converting bits to trits (Ternary Encoder)
+
+    'booth_encoding': False, # In all examples for IMC it is set to 'False'
+                             # it does stand for a specific bit scheme to store values to do faster multiplication
+
+    # NOT SURE ABOUT ALL THESE!
+    'multiplier_precision': 1,
+    'adder_input_precision': None,
+    'accumulator_precision': None,
+    'reg_accumulator_precision': None,
+    'reg_input_bitwidth': None,
+
+    # I don't see any pipelining, but could be in the controller...
+    'pipeline': False,
+
+    'vdd': 0.9, # Used for the precharging of the bitlines (of SRAM CiM)
+    'vddh': 1.5,
+    'vddl': 0.6,
+    'vstr': 0.31,
+
+    # the rows, cols, NOT SAME AS INPUT AND OUTPUTS! But it is valid for EACH FANTS ANALOG RRAM
+    'rows': 256, # 60 TL-ReRAM and 4 such clusters per CELL!!!!
+    'cols': 320,
+
+    'banks': 6,  # number of macros --> 6 subarrays, BUT they give array level throughput etc, so think I should just do a single Macro
+    # I think they evaluate just a single macro (to keep it easy)
+
+    'compact_rule': False,  # NOT SURE WHAT THIS IS!
+
+
+    'area': 1.7 ,  # mm2
+    # Total area, FROM GRAPH (Fig. 11 b)
+    # Also given is the 'Cell Area' which is 6.35 µm^2
+
+    'tclk': 1000 / 10,  # ns (assume tclk doesn't scale with technology)
+    # Unknown, not given in the paper
+
+    # TOPS and TOP/s is the same
+    # EE: TOP/s/W
+    # AE : TOP/s/mm^2
+    # For this paper, also 'normalized' numbers for this are available.
+    # This means they are normalized to 1-bit activation and 1-bit weights. While 'Analog' is calculated as 16 bits
+    'TOP/s': None, # OPS/cycle is known (either with the multiplexing, or full array usage)
+    'TOP/s/W': 230,
+    'TOP/s/mm^2': None, # Not known
+    'TOP/s/W/mm^2': 2.2,
+
+
+    # In this paper we use an SRAM CiM ARRAY at 28 nm node --> These values should be suited exactly for that
+    # FOR NOW NOT CHANGED, but probably not these
+    # BUT THEY WERE NOT PAPER SPECIFIC AND THE SAME FOR ALL THE IMC VALIDATIONS
+    'unit_area': 0.614,  # um2 # THIS IS FOR A SINGLE SRAM CELL -> 6 Transistors in 25 nm node
+    # APPROXIMATION FOR ReRAM -> 1 Transistor -> 1/6th of this -> Done in code
+
+    'unit_delay': 0.0478,  # ns
+    # As a for APPROXIMATION, this value will be 3 times more for ReRAM sensing.
+
+    'unit_cap': 0.7,  # fF
+    # Approximation for ReRAM 0.71 * unit_cap, there are less transistors thus lower capacitances
+
+    'dac_energy_k0': 50
+    # fF (energy validation fitting parameter, which is taken directly from the value in TinyML paper)
+}
+
+# NOT changed compared to IMC VALIDATION!!!
+# These are for SRAM caches, while we actually will use ReRAM cache --> Doing this in the code
+cacti2 = {  # 131072B, bw: 1024
     'delay': 0.106473,  # ns
     'r_energy': None,  # not used
     'w_energy': None,  # not used
@@ -196,7 +300,6 @@ if __name__ == '__main__':
         For area fitting, fit: cell scaling factor (2 for now), constant in ADC formula
         For delay fitting, fit: constant in ADC formula
     """
-    print(nvm_aimc1_cost_estimation(nvm_aimc1, cacti1) ) # nvm_aimc1
-
-    # print(aimc2_cost_estimation(aimc2, cacti2) ) # aimc2
+    # print(nvm_aimc1_cost_estimation(nvm_aimc1, cacti1) ) # nvm_aimc1
+    print(nvm_aimc2_cost_estimation(nvm_aimc2, cacti2) ) # nvm_aimc2
     # print(aimc3_cost_estimation(aimc3, cacti3))  # aimc3

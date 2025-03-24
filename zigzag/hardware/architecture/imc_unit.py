@@ -25,14 +25,23 @@ class ImcUnit(OperationalArrayABC):
         "dff_cap": 0.7 * 3 / 1e3,  # unit: pF
         "nd2_area": 0.614 / 1e6,  # unit: mm^2
         "xor2_area": 0.614 * 2.4 / 1e6,  # unit: mm^2
-        "dff_area": 0.614 * 6 / 1e6,  # unit: mm^2          <-- SRAM CELL AREA?
+        "dff_area": 0.614 * 6 / 1e6,  # unit: mm^2          <-- 6T SRAM cell area
         "nd2_dly": 0.0478,  # unit: ns
         "xor2_dly": 0.0478 * 2.4,  # unit: ns
     }
 
+    """
+        From validation -> The numbers above are derived from that!
+        Only unit conversion, and sometimes a multiplier is used!
+            'unit_area': 0.614,  # um2
+            'unit_delay': 0.0478,  # ns
+            'unit_cap': 0.7,  # fF
+    """
+
     def __init__(
         self,
         is_analog_imc: bool,
+        is_nvm: bool,
         bit_serial_precision: int,
         input_precision: list[int],
         adc_resolution: int,
@@ -45,6 +54,7 @@ class ImcUnit(OperationalArrayABC):
         # initialization
         self.tech_param = ImcUnit.TECH_PARAM_28NM
         self.is_aimc = is_analog_imc
+        self.is_nvm = is_nvm,
         self.bit_serial_precision = bit_serial_precision
         self.adc_resolution = adc_resolution
         self.cells_size = cells_size
@@ -76,7 +86,7 @@ class ImcUnit(OperationalArrayABC):
         self.cells_w_cost = None
 
     """
-    All parameters for the technology basically from a dictionary!
+    All parameters for the technology basically from a dictionary! -> 28 nm
     
     ENERGY
     

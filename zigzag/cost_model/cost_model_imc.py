@@ -52,6 +52,11 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
             access_same_data_considered_as_no_access=access_same_data_considered_as_no_access,
         )
 
+
+    """
+        !!!IMPORTANT!!!
+        Actual running of the CostModel!!!
+    """
     def run(self) -> None:
         """! Run the cost model evaluation."""
         super().calc_memory_utilization()
@@ -61,26 +66,44 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
         self.collect_area_data()
 
     def collect_area_data(self):
+        """
+        ###########################
+            This is the actual AREA calculation for the CIM!!!
+
+            I only don't understand the multipliers, as they are not there in the validations...
+        ###########################
+        """
         # get imc area
+        # The actual IMC area calculation happens in imc_array.py in get_area()
         self.imc_area_breakdown = self.operational_array.area_breakdown
         self.imc_area = self.operational_array.area
+
         # get mem area
         self.mem_area = 0
         self.mem_area_breakdown: dict[str, float] = {}
         for mem in self.mem_level_list:
             memory_instance = mem.memory_instance
             memory_instance_name = memory_instance.name
-            self.mem_area += memory_instance.area
+            self.mem_area += memory_instance.area # I might need to make sure that this is valid for my ReRAM caches
             self.mem_area_breakdown[memory_instance_name] = memory_instance.area
+
         # get total area
-        self.area_total = self.imc_area + self.mem_area
+        self.area_total = self.imc_area + self.mem_area # Just adding the CiM and MEM areas
 
     def calc_mac_energy_cost(self):
         """Calculate the dynamic MAC energy
         Overrides superclass' method
         """
+
+        """
+        ###########################
+            This is the actual ENERGY calculation for the CIM!!!
+        ###########################
+        """
         self.mac_energy_breakdown = self.operational_array.get_energy_for_a_layer(self.layer, self.mapping)
+        # The get_energy_for_a_layer() is defined in imc_array.py
         self.mac_energy = sum([energy for energy in self.mac_energy_breakdown.values()])
+        # Just adding up the whole energy breakdown
 
     def calc_latency(self):
         """!  Calculate latency in 4 steps
@@ -90,7 +113,7 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
         data size with the physical memory size at each level. If the effective data size is smaller than 50%
         of the physical memory size, then we take the whole period as the allowed memory updating window (double buffer
         effect);
-        otherwise we take the the period divided by the top_ir_loop as the allowed memory updating window.
+        otherwise we take the period divided by the top_ir_loop as the allowed memory updating window.
 
         2) Then, we compute the real data transfer rate given the actual memory bw per functional port pair,
         assuming we have enough memory ports.
@@ -112,6 +135,13 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
 
     def update_tclk(self):
         """! This function calculate the Tclk for IMC (In-Memory-Computing)"""
+
+        """
+        ###########################
+            This is the actual LATENCY/CLOCK calculation for the CIM!!!
+        ###########################
+        """
+        # Both are calculated in imc_array.py in the function get_tclk()
         self.tclk = self.operational_array.tclk
         self.tclk_breakdown = self.operational_array.tclk_breakdown
 

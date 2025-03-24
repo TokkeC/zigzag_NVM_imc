@@ -353,8 +353,8 @@ class CostModelEvaluation(CostModelEvaluationABC):
 
     def run(self) -> None:
         """! Run the cost model evaluation."""
-        self.calc_memory_utilization()
-        self.calc_memory_word_access()
+        self.calc_memory_utilization() # IMC and IMC_NVM the same
+        self.calc_memory_word_access() # IMC and IMC_NVM the same
         self.calc_energy()
         self.calc_latency()
 
@@ -542,8 +542,8 @@ class CostModelEvaluation(CostModelEvaluationABC):
         """! Calculates the energy cost of this cost model evaluation by calculating the memory reading/writing
         energy."""
         # TODO: Interconnection energy
-        self.calc_mac_energy_cost()
-        self.calc_memory_energy_cost()
+        self.calc_mac_energy_cost() # MAC (CIM) --> THIS IS OVERriDDEN IN COST MODEL IMC
+        self.calc_memory_energy_cost() # MEM
 
     def calc_mac_energy_cost(self) -> None:
         """! Calculate the dynamic MAC energy"""

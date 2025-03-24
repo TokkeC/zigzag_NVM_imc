@@ -45,8 +45,8 @@ class CostModelStage(Stage):
             """
                 I added this to see the max utilization
             """
-            print("tops_peak, topsw_peak, topsmm2_peak")
-            print(self.accelerator.operational_array.get_macro_level_peak_performance())
+            # print("tops_peak, topsw_peak, topsmm2_peak")
+            # print(self.accelerator.operational_array.get_macro_level_peak_performance())
             ###############################################
             cme = CostModelEvaluationForIMC(
                 accelerator=self.accelerator,

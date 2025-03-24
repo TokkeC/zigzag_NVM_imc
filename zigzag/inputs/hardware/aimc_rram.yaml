@@ -7,7 +7,7 @@ memories:
     w_bw: 8
     r_cost: 0 #nj # is together in the multiplication etc?
     w_cost: 0.095 # from normal register?
-    area: 0.000010 # in mm^2
+    area: 0.000010 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE
     r_port: 0
     w_port: 0
     rw_port: 1
@@ -24,7 +24,7 @@ memories:
     w_bw: 8
     r_cost: 0.021 # why different? #same as tpu_like
     w_cost: 0.021 #same as tpu_like
-    area: 0
+    area: 0 # 0 means OFF-CHIP
     r_port: 1
     w_port: 1
     rw_port: 0
@@ -102,6 +102,7 @@ memories:
 
 operational_array:
   is_imc: True
+  is_nvm: True
   imc_type: analog
   input_precision: [8, 8] # unit: bit
   bit_serial_precision: 2 # unit: bit

@@ -155,3 +155,9 @@ def get_hardware_performance_zigzag_imc(
 ) -> tuple[float, float, float, float, list[tuple[CostModelEvaluationABC, Any]]]:
     """Overload with type hint"""
     return get_hardware_performance_zigzag(*args, in_memory_compute=True)  # type: ignore
+
+
+def get_hardware_performance_zigzag_imc_nvm(
+        *args: Any,
+) -> tuple[float, float, float, float, list[tuple[CostModelEvaluationABC, Any]]]:
+    return get_hardware_performance_zigzag(*args, in_memory_compute=True)

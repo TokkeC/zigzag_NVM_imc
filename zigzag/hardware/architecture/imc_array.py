@@ -18,6 +18,7 @@ class ImcArray(ImcUnit):
     def __init__(
         self,
         is_analog_imc: bool,
+        is_nvm: bool,
         bit_serial_precision: int,
         input_precision: list[int],
         adc_resolution: int,
@@ -28,6 +29,7 @@ class ImcArray(ImcUnit):
     ):
         super().__init__(
             is_analog_imc=is_analog_imc,
+            is_nvm = is_nvm,
             bit_serial_precision=bit_serial_precision,
             input_precision=input_precision,
             adc_resolution=adc_resolution,
@@ -78,13 +80,11 @@ class ImcArray(ImcUnit):
             adc_energy = adc_energy / 1000  # unit: pJ
         return adc_area, adc_delay, adc_energy
 
-    """
-    I THINK THE DAC COST CAN STAY THE SAME FOR RERAM -> JUST USING NORMAL DACs
-    """
+
     def get_dac_cost(self) -> tuple[float, float, float]:
         """single DAC cost calculation"""
         # area (mm^2)
-        dac_area = 0  # neglected
+        dac_area = 0  # neglected, like in the validations
         # delay (ns)
         dac_delay = 0  # neglected
         # energy (fJ)
@@ -98,7 +98,7 @@ class ImcArray(ImcUnit):
     def get_area(self):
         """! get area of IMC macros (cells, mults, adders, adders_pv, accumulators. Exclude input/output regs)"""
         # area of cells
-        if self.auto_cost_extraction:
+        if self.auto_cost_extraction: # WORKS ONLY FOR SRAM CELLS!!!
             cost_per_bank = self.get_single_cell_array_cost_from_cacti(
                 tech_node=self.tech_param["tech_node"],
                 wordline_dim_size=self.wordline_dim_size,
@@ -112,17 +112,23 @@ class ImcArray(ImcUnit):
             assert (
                 self.cells_area is not None
             ), "No cells area given by user yet `auto_cost_extraction` is set to `false`"
+
+            """
+                IMPORTANT
+                The cell area need to be changed in the yaml file (hardware declaration).
+                For the rest, area calculation of the cells should be fine.
+            """
             area_cells = self.total_unit_count * self.cells_area
 
-            """
-                FOR RERAM THIS IS FINE
-                We can just give a cell size for a certain ReRAM cell, and it will calculate it correctly
-            """
-
+        """
+            NVM and non NVM the same
+            self.bitline_dim_size is the size of the dimension which is chosen as the inputs (wordlines, how many per bitline)
+            
+        """
         # area of DACs
-        if self.is_aimc:
+        if self.is_aimc: # Analog
             area_dacs = self.get_dac_cost()[0] * self.bitline_dim_size * self.nb_of_banks
-        else:
+        else: # Not needed
             area_dacs = 0
 
         # area of ADCs
@@ -131,11 +137,17 @@ class ImcArray(ImcUnit):
         else:
             area_adcs = 0
 
+
+        """
+            
+        """
         # area of multiplier array
-        # WHY IS THERE AREA FOR THE ANALOG CASE????
         if self.is_aimc:
             nb_of_1b_multiplier = (
-                self.weight_precision * self.wordline_dim_size * self.bitline_dim_size * self.nb_of_banks
+                self.weight_precision
+                * self.wordline_dim_size
+                * self.bitline_dim_size
+                * self.nb_of_banks
             )
         else:
             nb_of_1b_multiplier = (
@@ -207,6 +219,10 @@ class ImcArray(ImcUnit):
                 + self.get_1b_reg_area() * nb_of_1b_reg_accumulator
             )
 
+
+        """
+            Im confused right now, because what is the difference between the cells and the mults right now?
+        """
         # total logic area of imc macros (exclude cells)
         self.area_breakdown = {
             "cells": area_cells,
@@ -218,14 +234,15 @@ class ImcArray(ImcUnit):
             "accumulators": area_accumulators,
         }
 
-        ###############################################
-        """
-            I added this to see the area
-        """
-        print(self.area_breakdown)
-        ###############################################
+        # ###############################################
+        # """
+        #     I added this to see the area
+        # """
+        # print(self.area_breakdown)
+        # ###############################################
 
         self.area = sum([v for v in self.area_breakdown.values()])
+        # Just adding up the whole breakdown to 1 number
 
     def get_tclk(self):
         """! get clock cycle time of imc macros (worst path: dacs -> mults -> adcs -> adders -> accumulators)"""
@@ -323,6 +340,7 @@ class ImcArray(ImcUnit):
             "accumulators": dly_accumulators,
         }
         self.tclk = sum([v for v in self.tclk_breakdown.values()])
+        # Just summed up the breakdown
 
     def get_peak_energy_single_cycle(self) -> dict[str, float]:
         """! macro-level one-cycle energy of imc arrays (fully utilization, no weight updating)
@@ -477,7 +495,7 @@ class ImcArray(ImcUnit):
             self.mapped_group_depth,
         ) = self.get_precharge_energy(self.tech_param, layer, mapping)
 
-        # energy of DACs
+        # energy of DACs, same for NVM
         if self.is_aimc:
             energy_dacs = (
                 self.get_dac_cost()[2]
@@ -488,7 +506,7 @@ class ImcArray(ImcUnit):
         else:
             energy_dacs = 0
 
-        # energy of ADCs
+        # energy of ADCs, same for NVM
         if self.is_aimc:
             energy_adcs = (
                 self.get_adc_cost()[2]
@@ -500,11 +518,13 @@ class ImcArray(ImcUnit):
         else:
             energy_adcs = 0
 
-        # energy of multiplier array
-        if self.is_aimc:
+        # energy of multiplier array, reading the CiM ?
+        if self.is_aimc and not self.is_nvm:
             nb_of_active_1b_multiplier_per_macro = (
                 self.weight_precision * self.wordline_dim_size * mapped_rows_total_per_macro
             )
+        elif self.is_aimc and self.is_nvm:
+            nb_of_active_1b_multiplier_per_macro = 0 # NO SRAM reading!
         else:
             nb_of_active_1b_multiplier_per_macro = (
                 self.bit_serial_precision * self.weight_precision * self.wordline_dim_size * self.bitline_dim_size
@@ -518,9 +538,18 @@ class ImcArray(ImcUnit):
         )
 
         # energy of analog bitline addition, type: voltage-based
-        if self.is_aimc:
+        if self.is_aimc and not self.is_nvm:
             energy_analog_bl_addition = (
                 (self.tech_param["bl_cap"] * (self.tech_param["vdd"] ** 2) * self.weight_precision)
+                * mapped_cols_per_macro
+                * self.bitline_dim_size
+                * (self.activation_precision / self.bit_serial_precision)
+                * macro_activation_times
+            )
+        elif self.is_aimc and self.is_nvm:
+            # also bl_cap, but times 2 cause this is unit_cap/2, due to the 1 Transistor access (so NO CROSSBAR)
+            energy_analog_bl_addition = (
+                (self.tech_param["bl_cap"]*2 * (self.tech_param["vdd_read"] ** 2) * self.weight_precision)
                 * mapped_cols_per_macro
                 * self.bitline_dim_size
                 * (self.activation_precision / self.bit_serial_precision)

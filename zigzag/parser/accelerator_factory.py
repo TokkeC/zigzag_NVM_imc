@@ -68,9 +68,17 @@ class AcceleratorFactory:
             dataflows=dataflows,
         )
 
+
+    """
+        Creates the class for the operational array.
+        Right now it checks in the yaml whether there is is_imc is true.
+        It should also check whether is_nvm is true! -> Doing in create_imc_array
+    """
     def create_operational_array(self) -> OperationalArrayABC:
         is_imc = self.data["operational_array"]["is_imc"]
         return self.create_imc_array() if is_imc else self.create_non_imc_array()
+
+
 
     def create_non_imc_array(self) -> MultiplierArray:
         op_array_data: dict[str, Any] = self.data["operational_array"]
@@ -89,6 +97,7 @@ class AcceleratorFactory:
         # From operational_array
         op_array_data: dict[str, Any] = self.data["operational_array"]
 
+        is_nvm = op_array_data["is_nvm"]
         is_analog_imc = op_array_data["imc_type"] == "analog"
         bit_serial_precision = op_array_data["bit_serial_precision"]
         input_precision = op_array_data["input_precision"]
@@ -113,6 +122,7 @@ class AcceleratorFactory:
             cells_area=cells_area,
             dimension_sizes=dimension_sizes,
             auto_cost_extraction=auto_cost_extraction,
+            is_nvm=is_nvm,
         )
 
     def create_dataflows(self) -> SpatialMapping | None:

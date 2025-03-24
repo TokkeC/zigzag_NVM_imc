@@ -17,9 +17,7 @@ logging_level = logging.INFO
 logging_format = "%(asctime)s - %(name)s.%(funcName)s +%(lineno)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging_level, format=logging_format)
 
-""" 
-    Just naming conventions, it did a couple weird things, so fixed that
-"""
+
 hw_name = accelerator_rram.split(".")[-1]
 if hw_name == "yaml":
     hw_name = re.split(r"/|\.",accelerator_rram)[-2]
@@ -41,6 +39,12 @@ get_hardware_performance_zigzag(
     opt="latency",
     dump_folder=f"outputs/{experiment_id}",
     pickle_filename=f"outputs/{pickle_name}.pickle",
+    # lpf_limit = 6,
+    # nb_spatial_mappings_generated = 3,
+    in_memory_compute = True,
+    # exploit_data_locality = False,
+    # enable_mix_spatial_mapping = False,
+    # The outcommented ones are the defaults
 )
 
 """

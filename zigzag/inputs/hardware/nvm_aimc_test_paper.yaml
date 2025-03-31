@@ -1,13 +1,13 @@
-name: aimc_rram # Modelling A 22nm 4Mb 8b-Precision ReRAM Computing-in-Memory Macro with 11.91 to 195.7TOPS/W for Tiny AI Edge Devices
+name: nvm_aimc1 # Light_CiM (28 nm)
 
 memories:
   cells:
-    size: 8 # per "cell" 8 BIT (can be more) (for the fx*fy array)
-    r_bw: 8
-    w_bw: 8
-    r_cost: 0 #BECAUSE IT IS CIM, IT IS DONE WITH THE MAC OPERATION
-    w_cost: 0.095 # Writing 14 weight into the cell
-    area: 0.000010 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE CELL SIZE
+    size: 8 # Weight precision is 8 bits, and Ill just set it as 1 weight is 1 cell
+    r_bw: 8 # Reading and Writing them all at once
+    w_bw: 8 # Reading and Writing them all at once
+    r_cost: 0 #BECAUSE IT IS CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
+    w_cost: 0.095 # Writing 8bit weights into the cell
+    area: 0 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
     r_port: 0
     w_port: 0
     rw_port: 1
@@ -103,10 +103,10 @@ memories:
 operational_array:
   is_imc: True
   is_nvm: True
-  is_crossbar: True
+  is_crossbar: False # is 1T1R
   imc_type: analog
-  input_precision: [8, 8] # unit: bit
+  input_precision: [8, 8] # unit: bit, Inputs and Weights
   bit_serial_precision: 1 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
-  adc_resolution: 14 # unit: bit, OUTPUT
+  adc_resolution: 8 # unit: bit, Output precision
   dimensions: [D1, D2, D3]
-  sizes: [128, 512, 8] #1024x512 (1 bit per cell, and we see it as 8 bits per cell). This is per subarray, and thus 8 macros
+  sizes: [1536, 1536, 168] #128x8x12 (but /8 for bits)

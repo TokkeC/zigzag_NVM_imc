@@ -9,6 +9,7 @@ from zigzag.datatypes import (
 )
 from zigzag.hardware.architecture.accelerator import Accelerator
 from zigzag.hardware.architecture.imc_array import ImcArray
+from zigzag.hardware.architecture.imc_nvm_array import ImcNvmArray
 from zigzag.hardware.architecture.memory_hierarchy import MemoryHierarchy
 from zigzag.hardware.architecture.memory_instance import MemoryInstance
 from zigzag.hardware.architecture.memory_level import ServedMemDimensions
@@ -97,7 +98,9 @@ class AcceleratorFactory:
         # From operational_array
         op_array_data: dict[str, Any] = self.data["operational_array"]
 
-        is_nvm = op_array_data["is_nvm"]
+        is_nvm = op_array_data.get("is_nvm", False)
+        is_crossbar = op_array_data.get("is_crossbar", False)
+
         is_analog_imc = op_array_data["imc_type"] == "analog"
         bit_serial_precision = op_array_data["bit_serial_precision"]
         input_precision = op_array_data["input_precision"]
@@ -113,17 +116,30 @@ class AcceleratorFactory:
         cells_area = cells_data["area"]
         auto_cost_extraction = cells_data["auto_cost_extraction"]
 
-        return ImcArray(
-            is_analog_imc=is_analog_imc,
-            bit_serial_precision=bit_serial_precision,
-            input_precision=input_precision,
-            adc_resolution=adc_resolution,
-            cells_size=cells_size,
-            cells_area=cells_area,
-            dimension_sizes=dimension_sizes,
-            auto_cost_extraction=auto_cost_extraction,
-            is_nvm=is_nvm,
-        )
+        if is_nvm:
+            return ImcNvmArray(
+                is_analog_imc = is_analog_imc,
+                is_crossbar = is_crossbar,
+                bit_serial_precision = bit_serial_precision,
+                input_precision = input_precision,
+                adc_resolution = adc_resolution,
+                cells_size = cells_size,
+                cells_area = cells_area,
+                dimension_sizes = dimension_sizes,
+                auto_cost_extraction = auto_cost_extraction,
+            )
+
+        else:
+            return ImcArray(
+                is_analog_imc = is_analog_imc,
+                bit_serial_precision = bit_serial_precision,
+                input_precision = input_precision,
+                adc_resolution  =adc_resolution,
+                cells_size = cells_size,
+                cells_area = cells_area,
+                dimension_sizes = dimension_sizes,
+                auto_cost_extraction = auto_cost_extraction
+            )
 
     def create_dataflows(self) -> SpatialMapping | None:
         if "dataflows" not in self.data:

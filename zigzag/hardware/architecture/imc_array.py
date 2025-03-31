@@ -18,7 +18,6 @@ class ImcArray(ImcUnit):
     def __init__(
         self,
         is_analog_imc: bool,
-        is_nvm: bool,
         bit_serial_precision: int,
         input_precision: list[int],
         adc_resolution: int,
@@ -29,7 +28,6 @@ class ImcArray(ImcUnit):
     ):
         super().__init__(
             is_analog_imc=is_analog_imc,
-            is_nvm = is_nvm,
             bit_serial_precision=bit_serial_precision,
             input_precision=input_precision,
             adc_resolution=adc_resolution,
@@ -519,12 +517,10 @@ class ImcArray(ImcUnit):
             energy_adcs = 0
 
         # energy of multiplier array, reading the CiM ?
-        if self.is_aimc and not self.is_nvm:
+        if self.is_aimc:
             nb_of_active_1b_multiplier_per_macro = (
                 self.weight_precision * self.wordline_dim_size * mapped_rows_total_per_macro
             )
-        elif self.is_aimc and self.is_nvm:
-            nb_of_active_1b_multiplier_per_macro = 0 # NO SRAM reading!
         else:
             nb_of_active_1b_multiplier_per_macro = (
                 self.bit_serial_precision * self.weight_precision * self.wordline_dim_size * self.bitline_dim_size
@@ -538,18 +534,9 @@ class ImcArray(ImcUnit):
         )
 
         # energy of analog bitline addition, type: voltage-based
-        if self.is_aimc and not self.is_nvm:
+        if self.is_aimc:
             energy_analog_bl_addition = (
                 (self.tech_param["bl_cap"] * (self.tech_param["vdd"] ** 2) * self.weight_precision)
-                * mapped_cols_per_macro
-                * self.bitline_dim_size
-                * (self.activation_precision / self.bit_serial_precision)
-                * macro_activation_times
-            )
-        elif self.is_aimc and self.is_nvm:
-            # also bl_cap, but times 2 cause this is unit_cap/2, due to the 1 Transistor access (so NO CROSSBAR)
-            energy_analog_bl_addition = (
-                (self.tech_param["bl_cap"]*2 * (self.tech_param["vdd_read"] ** 2) * self.weight_precision)
                 * mapped_cols_per_macro
                 * self.bitline_dim_size
                 * (self.activation_precision / self.bit_serial_precision)

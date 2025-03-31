@@ -22,7 +22,8 @@ nvm_aimc1 = {  # https://ieeexplore.ieee.org/document/10614392 (28nm)
 
     'input_channel': 128*8*12,  # how many input in parallel (per bank) --> GIVEN IN BITS NOW
     'output_channel': 128*8*12,  # how many output in parallel (per bank) --> GIVEN IN BITS NOW
-    # sizes: [1, 196608, 1] #128x128(SubArray is 128x128 cells) x8(Sub-Arrays per PE) x12(PEs per FANT, only 1 ADC per FANT......) x168(FANTS per chip)
+    # sizes: [1, 196608, 1]
+    # #128x128(SubArray is 128x128 cells) x8(Sub-Arrays per PE) x12(PEs per FANT, only 1 ADC per FANT......) x168(FANTS per chip)
     # Each cell can hold 1 bit, but we see it as 8 bits per cell.
     # D1 =8* 168 /8 (precision ADCs), D2 = 128x16x96
     # Right now the BANKS are seen as the FANTs

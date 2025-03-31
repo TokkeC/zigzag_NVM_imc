@@ -41,7 +41,6 @@ class ImcUnit(OperationalArrayABC):
     def __init__(
         self,
         is_analog_imc: bool,
-        is_nvm: bool,
         bit_serial_precision: int,
         input_precision: list[int],
         adc_resolution: int,
@@ -54,7 +53,6 @@ class ImcUnit(OperationalArrayABC):
         # initialization
         self.tech_param = ImcUnit.TECH_PARAM_28NM
         self.is_aimc = is_analog_imc
-        self.is_nvm = is_nvm,
         self.bit_serial_precision = bit_serial_precision
         self.adc_resolution = adc_resolution
         self.cells_size = cells_size
@@ -353,10 +351,6 @@ class ImcUnit(OperationalArrayABC):
         mapped_rows_for_adder_per_macro = math.ceil(mapped_rows_for_adder_per_macro)
         return mapped_rows_total_per_macro, mapped_rows_for_adder_per_macro
 
-
-    """
-        NEEDS TO BE CHECKED FOR RERAM
-    """
     def get_precharge_energy(
         self, tech_param: dict[str, float], layer: LayerNode, mapping: Mapping
     ) -> tuple[float, float]:
@@ -390,7 +384,6 @@ class ImcUnit(OperationalArrayABC):
                 / precharge_interval
             )
 
-            # WHY WL PRECHARGING? -> just activating WL?
             single_pe_precharge_energy = (
                 (tech_param["wl_cap"] * (tech_param["vdd"] ** 2))
                 + (tech_param["bl_cap"] * (tech_param["vdd"] ** 2) * group_depth)
@@ -402,8 +395,6 @@ class ImcUnit(OperationalArrayABC):
                 if loop_name in weight_r_layer_dims:
                     mapped_group_depth *= loop_size
         else:
-
-            #WHY? We need to precharge at least once to read out?
             energy_precharging = 0
             mapped_group_depth = 1
         return energy_precharging, mapped_group_depth

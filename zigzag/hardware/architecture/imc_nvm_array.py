@@ -29,6 +29,7 @@ class ImcNvmArray(ImcArray):
         dimension_sizes: dict[OADimension, int],
         auto_cost_extraction: bool = False,
     ):
+        self.is_crossbar = is_crossbar
         super().__init__(
             is_analog_imc=is_analog_imc,
             bit_serial_precision=bit_serial_precision,
@@ -39,7 +40,6 @@ class ImcNvmArray(ImcArray):
             dimension_sizes=dimension_sizes,
             auto_cost_extraction=auto_cost_extraction,
         )
-        self.is_crossbar = is_crossbar
         self.get_area()
         self.get_tclk()
         (
@@ -90,13 +90,18 @@ class ImcNvmArray(ImcArray):
             if self.is_crossbar: # CROSSBAR
                 nb_of_1b_multiplier = 0
             else: # 1T1R/ Pseudo-Crossbar
-                nb_of_1b_multiplier = (
-                    self.weight_precision
+                # temporarily for 2T2R a variable, also with ReRAM in it
+                T1_or_T2 = 4/5 #2T2R
+                amount_of_bits_per_reram_cell = 4
+                nb_of_1b_multiplier = (1
+                    * (self.weight_precision / amount_of_bits_per_reram_cell) # to see how many actual RERAM CELLS are in out cell!
                     * self.wordline_dim_size
                     * self.bitline_dim_size
                     * self.nb_of_banks
+                    * T1_or_T2
                 )
         else: # DIMC -> 1T1R (no crossbar possible)
+
             nb_of_1b_multiplier = (
                 self.bit_serial_precision # Having to check this
                 * self.weight_precision # How many bits are actually saved in each cell
@@ -104,12 +109,44 @@ class ImcNvmArray(ImcArray):
                 * self.bitline_dim_size
                 * self.nb_of_banks
             )
-        area_mults = (self.get_1b_multiplier_area()  # AND gate
+        area_mults = (self.get_1b_multiplier_area()  # NAND2 gate, 4Ts
                       * nb_of_1b_multiplier)
+
+        # print(area_mults)
+
+        # area of ADCs -> OFTEN SHARED OVER COLUMNS (in SRAM not the case)
+        ADC_share_factor = 64 #every 8 columns in this example
+        special_ADC_factor = 1 #1.7 # makes it kinda exact
+        if self.is_aimc:
+            area_adcs = (self.get_adc_cost()[0]
+                         # * self.weight_precision
+                         * self.bitline_dim_size
+                         * self.nb_of_banks
+                         * (1/ADC_share_factor)
+                         * special_ADC_factor
+                         )
+        else:
+            area_adcs = 0
+
+        print(self.get_adc_cost()[0])
+        print(1
+             # * self.weight_precision
+             * self.bitline_dim_size
+             * self.nb_of_banks
+             * (1/ADC_share_factor))
+
+
+        # BITLINE DRIVERS -> NEed to be checked with way more data
+        # I have no idea which logic is included in this!
+        BL_driver_paper2 = 1327 / 10**6 #mm^2
+        BL_driver_paper3 = 487.8 / 10**6 + 215.75 / 10**6 #mm^2 #Digital/Driver + Buffers (BL)
+        area_bl_drivers = BL_driver_paper3 * self.wordline_dim_size
 
         # total logic area of imc macros (exclude cells)
         # The other parts of the dictionary are calculated in the super class.
         self.area_breakdown["mults"] = area_mults
+        self.area_breakdown["adcs"] = area_adcs
+        self.area_breakdown["bl_drivers"] = area_bl_drivers
 
         self.area = sum([v for v in self.area_breakdown.values()])
         # Just adding up the whole breakdown to 1 number
@@ -149,7 +186,7 @@ class ImcNvmArray(ImcArray):
         """! macro-level one-cycle energy of imc arrays (fully utilization, no weight updating)
         (components: cells, mults, adders, adders_pv, accumulators. Not include input/output regs)
         """
-
+        ADC_share_factor = 64
         # First running from superclass again -> So from normal CiM Array
         peak_energy_breakdown = super().get_peak_energy_single_cycle()
         """
@@ -216,23 +253,55 @@ class ImcNvmArray(ImcArray):
 
         peak_energy_breakdown["mults"] = energy_mults
         peak_energy_breakdown["analog_bl_addition"] = energy_analog_bl_addition
+        peak_energy_breakdown["adcs"] = peak_energy_breakdown["adcs"] * ADC_share_factor
+
+        print("Peak energy breakdown")
+        print(peak_energy_breakdown)
+        print(sum(peak_energy_breakdown.values()))
 
         return peak_energy_breakdown
 
     def get_macro_level_peak_performance(self) -> tuple[float, float, float]:
         """! macro-level peak performance of imc arrays (fully utilization, no weight updating)"""
+        # ADC_share_factor = 8
+        ADC_share_factor = 64
+        # ADC_quantization_cycles = 15 #delay of ADCs
+        ADC_quantization_cycles = 15
         nb_of_macs_per_cycle = (
             self.wordline_dim_size
             * self.bitline_dim_size
-            / (self.activation_precision / self.bit_serial_precision) # this is the output and input precision
+            / (self.activation_precision / self.bit_serial_precision) # this is the input precision and how much on a WL at once
             * self.nb_of_banks
+            # * self.weight_precision # on per bit level TOPS, so normalized
+            # * self.bit_serial_precision
+            / ADC_share_factor
+            / ADC_quantization_cycles
         )
+        print("TOP",nb_of_macs_per_cycle * 2 / 1000)
+
+        print(self.wordline_dim_size,
+              self.bitline_dim_size,
+              self.activation_precision,
+              self.bit_serial_precision,
+              self.nb_of_banks,
+              self.weight_precision)
+
 
         clock_cycle_period = self.tclk  # unit: ns
+
+        clock_cycle_period_paper2 = 1/ 0.01886792 #0.02 Hz, so 53 seconds????
+        clock_cycle_period_paper3 = 10**(-6) / 650 #650 MHz, with quantization 43.3 Mhz (factor 15 from ADC quantization)
+        clock_cycle_period_paper4 = 1
+        clock_cycle_period = clock_cycle_period
+        print("Clock cycle period", clock_cycle_period)
+
         peak_energy_per_cycle = sum([v for v in self.get_peak_energy_single_cycle().values()])  # unit: pJ
+        # print("peak energy per cycle", peak_energy_per_cycle)
         imc_area = self.area  # unit: mm^2
+        print("IMC AREA", imc_area)
 
         # Times 2 is for the operations (a MAC is 2 operations)
+
         tops_peak = nb_of_macs_per_cycle * 2 / clock_cycle_period / 1000
         topsw_peak = nb_of_macs_per_cycle * 2 / peak_energy_per_cycle
         topsmm2_peak = tops_peak / imc_area

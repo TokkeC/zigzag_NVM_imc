@@ -1,0 +1,114 @@
+name: nvm_aimc4 # A 28nm Nonvolatile AI Edge Processor using 4Mb Analog-Based Near-MemoryCompute ReRAM with 27.2 TOPS/W for Tiny AI Edge Devices (28 nm)
+# 1T1R array
+
+memories:
+  cells:
+    size: 1 # 1T1R, with ReRAM only holding 1 bit
+    r_bw: 1 # Reading and Writing them all at once
+    w_bw: 1 # Reading and Writing them all at once
+    r_cost: 0 #BECAUSE IT IS NVM CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
+    w_cost: 0.080 # Writing 8bit weights into the cell -> Now as 10 pJ per 1 bit cell
+    area: 0 #0.0000125 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 0 # Not on critical path
+    operands: [I2] # weights
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+    served_dimensions: [] # Fully unrolled over all multipliers
+
+  rf_1B: #Also ReRAM actually!
+    size: 8
+    r_bw: 8
+    w_bw: 8
+    r_cost: 0.080
+    w_cost: 0.080
+    area: 0.0000125
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    operands: [I1] #Inputs
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+    served_dimensions: [D1]
+
+  rf_2B:
+    size: 8
+    r_bw: 8
+    w_bw: 8
+    r_cost: 0.080
+    w_cost: 0.080
+    area: 0.0000125
+    r_port: 2
+    w_port: 2
+    rw_port: 0
+    latency: 1
+    operands: [I2] # outputs
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_2
+        th: r_port_2
+    served_dimensions: [D2]
+
+  sram_256KB:
+    size: 262144
+    r_bw: 512
+    w_bw: 512
+    r_cost: 416.16 #same as tpu_like
+    w_cost: 378.4 #same as tpu_like
+    area: 0
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    min_r_granularity: 64
+    min_w_granularity: 64
+    operands: [I1, O]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_1
+        th: r_port_1
+    served_dimensions: [D1, D2]
+
+  dram:
+    size: 10000000000
+    r_bw: 64
+    w_bw: 64
+    r_cost: 700 #same as tpu_like
+    w_cost: 750 #same as tpu_like
+    area: 0
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 1
+    operands: [I1, I2, O]
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+        fl: rw_port_1
+        th: rw_port_1
+    served_dimensions: [D1, D2]
+
+operational_array:
+  is_imc: True
+  is_nvm: True
+  is_crossbar: False # is 2T2R -> 1T1R in zigzag
+  imc_type: analog
+  input_precision: [8, 1] # unit: bit, Inputs and Weights
+  bit_serial_precision: 1 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
+  adc_resolution: 4 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
+  # Actually the ADC resolution is 8 bit, but due to the relaxed requirements they could shrink them quite a bit
+  dimensions: [D1, D2]
+  sizes: [1024, 1024] #576x512 (but for bits) #1 adc per 8 columns -> 64 ADCs

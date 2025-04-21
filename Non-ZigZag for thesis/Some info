@@ -1,0 +1,12 @@
+ReRAM Write is generally with 50-100 ns pulses
+    For Filamentary around 10-100 ns (but not used according to prof)
+    For OxRAM (commercialized) a bit higher 50-100 ns
+    For 3D Crosspoint ReRAM (Intel Optane etc.) 100-200 ns
+    Very new fast devices (so unimportant now) 1-10 ns
+
+
+ReRAM Reading is generally with 5-50 ns pulses -> 3-50 for production-grade
+    Depending to difference between HRS and LRS
+    On device level actually 5-10 ns, but in arrays it gets a bit bigger
+
+

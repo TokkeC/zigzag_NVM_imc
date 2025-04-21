@@ -2,51 +2,51 @@ name: nvm_aimc1 # Light_CiM (28 nm)
 
 memories:
   cells:
-    size: 8 # Weight precision is 8 bits, and Ill just set it as 1 weight is 1 cell
+    size: 8 # Weight precision is 8 bits, and I'll just set it as 1 weight is 1 cell
     r_bw: 8 # Reading and Writing them all at once
     w_bw: 8 # Reading and Writing them all at once
-    r_cost: 0 #BECAUSE IT IS CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
-    w_cost: 0.095 # Writing 8bit weights into the cell
-    area: 0 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
+    r_cost: 0 #BECAUSE IT IS NVM CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
+    w_cost: 0.080 # Writing 8bit weights into the cell -> Now as 10 pJ per 1 bit cell
+    area: 0.0000125 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
     r_port: 0
     w_port: 0
     rw_port: 1
-    latency: 0
-    operands: [I2] #weights
+    latency: 0 # Not on critical path
+    operands: [I2] # weights
     ports:
       - fh: rw_port_1
         tl: rw_port_1
     served_dimensions: [] # Fully unrolled over all multipliers
 
-  rf_1B:
+  rf_1B: #Also ReRAM actually!
     size: 8
     r_bw: 8
     w_bw: 8
-    r_cost: 0.021 #same as tpu_like
-    w_cost: 0.021 #same as tpu_like
-    area: 0 # 0 means OFF-CHIP
+    r_cost: 0.080
+    w_cost: 0.080
+    area: 0.0000125
     r_port: 1
     w_port: 1
     rw_port: 0
     latency: 1
-    operands: [I1]
+    operands: [I1] #Inputs
     ports:
       - fh: w_port_1
         tl: r_port_1
     served_dimensions: [D1,D3]
 
   rf_2B:
-    size: 16
-    r_bw: 16
-    w_bw: 16
-    r_cost: 0.021 #same as tpu_like
-    w_cost: 0.021 #same as tpu_like
-    area: 0
+    size: 8
+    r_bw: 8
+    w_bw: 8
+    r_cost: 0.080
+    w_cost: 0.080
+    area: 0.0000125
     r_port: 2
     w_port: 2
     rw_port: 0
     latency: 1
-    operands: [O]
+    operands: [I2] # outputs
     ports:
       - fh: w_port_1
         tl: r_port_1
@@ -107,6 +107,6 @@ operational_array:
   imc_type: analog
   input_precision: [8, 8] # unit: bit, Inputs and Weights
   bit_serial_precision: 1 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
-  adc_resolution: 8 # unit: bit, Output precision
+  adc_resolution: 8 # unit: bit, Output precision, sensing precision
   dimensions: [D1, D2, D3]
-  sizes: [1536, 1536, 168] #128x8x12 (but /8 for bits)
+  sizes: [12288, 1536, 168] #128x8x12 (but /8 for bits)

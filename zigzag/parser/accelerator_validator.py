@@ -135,6 +135,8 @@ class AcceleratorValidator:
                 "multiplier_energy": {"type": "float", "required": False},
                 "multiplier_area": {"type": "float", "required": False},
                 # IMC properties
+                "is_nvm": {"type": "boolean", "default": False},
+                "is_crossbar": {"type": "boolean", "default": False},
                 "imc_type": {
                     "type": "string",
                     "allowed": ["analog", "digital"],

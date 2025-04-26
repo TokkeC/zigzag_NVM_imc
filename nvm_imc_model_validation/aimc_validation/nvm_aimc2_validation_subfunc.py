@@ -100,9 +100,9 @@ def nvm_aimc2_cost_estimation(nvm_aimc, cacti_value):
                               # latency=0,
 
                               delay=5,  # ns WRITE
-                              r_energy=nvm_aimc['rows'] * nvm_aimc['cols'] * 8.57,
+                              r_energy=nvm_aimc['rows'] * nvm_aimc['cols'] * 8.57, #0.02
                               # fJ # should be energy to restore the whole array to SRAM (without conversion circuits taken into account)
-                              w_energy=nvm_aimc['rows'] * nvm_aimc['cols'] * 69.2,  # fJ
+                              w_energy=nvm_aimc['rows'] * nvm_aimc['cols'] * 69.2,  # fJ # 50
                               area = 0, # PHYSICALLY ON TOP OF THE SRAM --> NO EXTRA AREA
                               # area = nvm_aimc['rows'] * nvm_aimc['cols']
                               #      * 4 * 60  # per cell actually 4x60 ReRAMM CELLS

@@ -108,7 +108,7 @@ operational_array:
   imc_type: analog
   input_precision: [4, 4] # unit: bit, Inputs and Weights
   bit_serial_precision: 4 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
-  adc_resolution: 6 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
+  adc_resolution: 8 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
   # Actually the ADC resolution is 8 bit, but due to the relaxed requirements they could shrink them quite a bit
   dimensions: [D1, D2]
   sizes: [512, 512] #576x512 (but for bits) #1 adc per 8 columns -> 64 ADCs

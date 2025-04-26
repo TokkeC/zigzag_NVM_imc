@@ -360,11 +360,17 @@ class ImcArray(ImcUnit):
             energy_adcs = 0
 
         # energy of multiplier array
+        # The multipliers are the extra transistors needed to add to the SRAM to do the actual multiplication.
+        # It models the EXTRA TRANSISTORS needed on top of the 6T SRAM cells array.
         if self.is_aimc:
             nb_of_1b_multiplier = (
-                self.weight_precision * self.wordline_dim_size * self.bitline_dim_size * self.nb_of_banks
+                self.weight_precision
+                * self.wordline_dim_size
+                * self.bitline_dim_size
+                * self.nb_of_banks
             )
         else:
+            # The bit serial precision is the amount of bits on the WL per cycle
             nb_of_1b_multiplier = (
                 self.bit_serial_precision
                 * self.weight_precision
@@ -488,6 +494,7 @@ class ImcArray(ImcUnit):
         self.mapped_rows_total_per_macro = mapped_rows_total_per_macro
 
         # energy of local bitline precharging during weight stationary in cells
+        # Only usefull for LOCAL BITLINES within a "cell"
         (
             energy_local_bl_precharging,
             self.mapped_group_depth,

@@ -186,7 +186,10 @@ class ImcNvmArray(ImcArray):
         """! macro-level one-cycle energy of imc arrays (fully utilization, no weight updating)
         (components: cells, mults, adders, adders_pv, accumulators. Not include input/output regs)
         """
-        ADC_share_factor = 64
+        # so, for paper3 needs to be 1.07
+
+
+        ADC_share_factor = 8
         # First running from superclass again -> So from normal CiM Array
         peak_energy_breakdown = super().get_peak_energy_single_cycle()
         """
@@ -251,9 +254,21 @@ class ImcNvmArray(ImcArray):
         else: # DIMC 1T1R
             energy_analog_bl_addition = 0
 
+        # energy of adcs
+        #should be 8484
+        if self.is_aimc:
+            energy_adcs = (self.get_adc_cost()[2]
+                           # * self.weight_precision # this is if we see it as 4 bitlines WITH ALL AN ADC
+                           * self.wordline_dim_size #/ ADC_share_factor
+                           # * self.bitline_dim_size
+                           * self.nb_of_banks)
+        else:
+            energy_adcs = 0
+
+        print("energy_adcs",energy_adcs)
         peak_energy_breakdown["mults"] = energy_mults
         peak_energy_breakdown["analog_bl_addition"] = energy_analog_bl_addition
-        peak_energy_breakdown["adcs"] = peak_energy_breakdown["adcs"] * ADC_share_factor
+        peak_energy_breakdown["adcs"] = energy_adcs
 
         print("Peak energy breakdown")
         print(peak_energy_breakdown)
@@ -263,40 +278,47 @@ class ImcNvmArray(ImcArray):
 
     def get_macro_level_peak_performance(self) -> tuple[float, float, float]:
         """! macro-level peak performance of imc arrays (fully utilization, no weight updating)"""
-        # ADC_share_factor = 8
-        ADC_share_factor = 64
+        ADC_share_factor = 8
+        # ADC_share_factor = 64
         # ADC_quantization_cycles = 15 #delay of ADCs
-        ADC_quantization_cycles = 15
+        # ADC_quantization_cycles = 15
         nb_of_macs_per_cycle = (
             self.wordline_dim_size
             * self.bitline_dim_size
             / (self.activation_precision / self.bit_serial_precision) # this is the input precision and how much on a WL at once
             * self.nb_of_banks
-            # * self.weight_precision # on per bit level TOPS, so normalized
-            # * self.bit_serial_precision
+            * self.weight_precision # on per bit level TOPS, so normalized
+            * self.bit_serial_precision
             / ADC_share_factor
-            / ADC_quantization_cycles
+            # / ADC_quantization_cycles
         )
-        print("TOP",nb_of_macs_per_cycle * 2 / 1000)
+        # print("kOP",nb_of_macs_per_cycle * 2 / (1000))
 
-        print(self.wordline_dim_size,
-              self.bitline_dim_size,
-              self.activation_precision,
-              self.bit_serial_precision,
-              self.nb_of_banks,
-              self.weight_precision)
+        # print(self.wordline_dim_size,
+        #       self.bitline_dim_size,
+        #       self.activation_precision,
+        #       self.bit_serial_precision,
+        #       self.nb_of_banks,
+        #       self.weight_precision,
+        #       self.nb_of_banks)
 
 
+        # IN NANOSECONDS, VERY VERY IMPORTANT
         clock_cycle_period = self.tclk  # unit: ns
+        print('tclk info', self.tclk_breakdown)
+        print(self.tclk)
 
-        clock_cycle_period_paper2 = 1/ 0.01886792 #0.02 Hz, so 53 seconds????
-        clock_cycle_period_paper3 = 10**(-6) / 650 #650 MHz, with quantization 43.3 Mhz (factor 15 from ADC quantization)
+        # clock_cycle_period_paper2 = 1/ 0.01886792 #0.02 Hz, so 53 seconds????
+        clock_cycle_period_paper3 = 10**(3) / 650 #650 MHz, with quantization 43.3 Mhz (factor 15 from ADC quantization)
         clock_cycle_period_paper4 = 1
-        clock_cycle_period = clock_cycle_period
+        clock_cycle_period = clock_cycle_period_paper3 * 15
         print("Clock cycle period", clock_cycle_period)
 
+        #pJ (10**-12 J) VERY IMPORTANT
         peak_energy_per_cycle = sum([v for v in self.get_peak_energy_single_cycle().values()])  # unit: pJ
-        # print("peak energy per cycle", peak_energy_per_cycle)
+        print("peak energy per cycle", peak_energy_per_cycle)
+        print("energy single cycle", self.get_peak_energy_single_cycle())
+        peak_energy_per_cycle = 26681.323
         imc_area = self.area  # unit: mm^2
         print("IMC AREA", imc_area)
 
@@ -304,6 +326,7 @@ class ImcNvmArray(ImcArray):
 
         tops_peak = nb_of_macs_per_cycle * 2 / clock_cycle_period / 1000
         topsw_peak = nb_of_macs_per_cycle * 2 / peak_energy_per_cycle
+        print('needed', nb_of_macs_per_cycle * 2 / 39.3, nb_of_macs_per_cycle * 2 / 39.3 *0.32)
         topsmm2_peak = tops_peak / imc_area
 
         logger = logging.getLogger(__name__)

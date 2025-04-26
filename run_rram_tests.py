@@ -14,7 +14,7 @@ from zigzag.visualization.results.plot_cme import bar_plot_cost_model_evaluation
 
 
 
-accelerator_rram = "zigzag/inputs/hardware/nvm_aimc_test_paper4.yaml"
+accelerator_rram = "zigzag/inputs/hardware/nvm_aimc_test_paper3.yaml"
 # accelerator_rram = "zigzag/inputs/hardware/aimc.yaml"
 
 workload_rram = "zigzag/inputs/workload/resnet18.onnx"

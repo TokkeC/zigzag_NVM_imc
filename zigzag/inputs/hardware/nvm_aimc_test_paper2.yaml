@@ -1,4 +1,4 @@
-name: nvm_aimc2 # 576K RRAM based CIM (28 nm)
+name: nvm_aimc2 # JOS 576K RRAM based CIM (28 nm)
 # 2T2R array
 
 memories:
@@ -104,10 +104,21 @@ memories:
 operational_array:
   is_imc: True
   is_nvm: True
-  is_crossbar: False # is 2T2R -> 1T1R in zigzag
   imc_type: analog
   input_precision: [1, 4] # unit: bit, Inputs and Weights
   bit_serial_precision: 1 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
   adc_resolution: 8 # unit: bit, Output precision, sensing precision
   dimensions: [D1, D2]
   sizes: [576, 512] #576x512 (but for bits) #1 adc per 8 columns
+
+nvm_param:
+  nvm_array_type: 2T2R
+  tech_node: 0.028
+  V_read: 0.2
+  I_LRS: 0.0000050
+  I_HRS: 0.0000001
+  V_wl_swing_read: 0.9
+  V_bl_swing_read: 0.2
+  ADC_share_factor: 8
+  cell_area_F_multiplier: 500
+  # area_access_transistor_mm2: # let is be computed by the framework

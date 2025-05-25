@@ -1,0 +1,36 @@
+----------- PAPER 4 -----------
+Title: A 28nm Nonvolatile AI Edge Processor using 4Mb Analog-Based Near-Memory-Compute ReRAM with 27.2 TOPS/W for Tiny AI Edge Devices
+Authors: T.-H. Wen, et al.
+-- Main parameters/info: --
+nvm_param:
+  nvm_array_type: 1T1R
+  tech_node: 0.028
+  V_read: 0.2
+  I_LRS: 0.000004
+  I_HRS: 0.0000001
+  V_wl_swing_read: 0.8
+  V_bl_swing_read: 0.2
+  ADC_share_factor: 8
+  cell_area_F_multiplier: 300
+operational_array:
+  is_imc: True
+  is_nvm: True
+  imc_type: analog
+  input_precision: [8, 8] # unit: bit, Inputs and Weights
+  bit_serial_precision: 1 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
+  adc_resolution: 4 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
+  # Actually the quantization is near 6 bit, but they use a 4 bit ADC with some extra circuitry
+  dimensions: [D1, D2]
+  sizes: [1024, 1024] #1024x1024 (but for bits) #1 adc per 8 columns -> 64 ADCs
+
+-- Performance Calculated: --
+TOP/s: 0.3153886539689881, TOP/s/W: 32.66485116595857, TOP/s/mm^2: 0.12155324812782177
+TOP/s/bit: 20.184873854015237, TOP/s/W/bit: 2090.5504746213483, TOP/s/mm^2/bit: 7.779407880180593
+Latency/clock period: 12.987150769230768 ns, Macro area: 2.594654267381936 mm^2, Energy consumption (single output cycle): 125.39472410848197 pJ
+Latency breakdown:  {'cells': 0, 'dacs': 0, 'adcs': 10.769230769230768, 'mults': 0, 'adders_regular': 0, 'adders_pv': 1.3384, 'accumulators': 0.8795200000000001, 'wl_drivers': 0, 'bl_drivers': 0}
+Area breakdown:  {'cells': 0, 'dacs': 0, 'adcs': 0.0029284645108206254, 'mults': 1.9730006016, 'adders_regular': 0, 'adders_pv': 0.2353987584, 'accumulators': 0.17353113599999997, 'wl_drivers': 0.16840361029955775, 'bl_drivers': 0.041391696571557696}
+Peak energy breakdown:  {'cells': 72.34166153846154, 'mults': 0, 'wl_drivers': 42.96010466825452, 'bl_drivers': 0.6599441417659073, 'dacs': 0, 'adcs': 5.18731776, 'adders_regular': 0, 'adders_pv': 2.6127359999999995, 'accumulators': 1.6329599999999997}
+
+-- Performance Reported: --
+TOP/s: 0.34, TOP/s/W: 27.2, TOP/s/mm^2: 0.056 (including 277 IO pads)
+Latency/clock period: 12.05 ns, Macro area: 6.07 mm^2 (including 277 IO pads), Energy consumption (single output cycle): 125.0 pJ

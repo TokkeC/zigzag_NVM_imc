@@ -36,8 +36,8 @@ class ImcArray(ImcUnit):
             dimension_sizes=dimension_sizes,
             auto_cost_extraction=auto_cost_extraction,
         )
-        self.get_area()
         self.get_tclk()
+        self.get_area()
         (
             self.tops_peak,
             self.topsw_peak,
@@ -56,7 +56,7 @@ class ImcArray(ImcUnit):
             adc_area: float = 0
         else:  # formula extracted and validated against 3 AIMC papers on 28nm
             k1 = -0.0369
-            k2 = 1.206
+            k2 = 1.206 #+ 0.6096 # was trying for 40 nm x
             adc_area = 10 ** (k1 * self.adc_resolution + k2) * 2**self.adc_resolution * (10**-6)  # unit: mm^2
 
         # delay (ns)
@@ -355,7 +355,10 @@ class ImcArray(ImcUnit):
 
         # energy of ADCs
         if self.is_aimc:
-            energy_adcs = self.get_adc_cost()[2] * self.weight_precision * self.wordline_dim_size * self.nb_of_banks
+            energy_adcs = (self.get_adc_cost()[2]
+                           * self.weight_precision
+                           * self.wordline_dim_size
+                           * self.nb_of_banks)
         else:
             energy_adcs = 0
 
@@ -397,7 +400,7 @@ class ImcArray(ImcUnit):
             energy_adders_regular = 0
         else:
             adder_input_precision_regular = self.weight_precision
-            nb_inputs_of_adder_regular = self.bitline_dim_size  # the number of inputs of the adder tree
+            nb_inputs_of_adder_regular = self.bitline_dim_size  # the number of inputs of the adder tree -> WL dim size for me
             adder_depth_regular = math.log2(nb_inputs_of_adder_regular)
             assert (
                 adder_depth_regular % 1 == 0
@@ -425,6 +428,11 @@ class ImcArray(ImcUnit):
                 math.log2(nb_inputs_of_adder_pv) - 0.5
             )
         nb_of_adder_trees_pv = self.wordline_dim_size * self.nb_of_banks
+
+        component_type_str = f"{type(self).__module__}.{type(self).__name__}"
+        if component_type_str == "zigzag.hardware.architecture.imc_nvm_array.ImcNvmArray":
+            nb_of_adder_trees_pv = (self.bitline_dim_size * self.nb_of_banks) / (self.adc_share_factor * (self.weight_precision / self.cells_size) )
+
         energy_adders_pv = self.get_1b_adder_energy() * nb_of_1b_adder_per_tree_pv * nb_of_adder_trees_pv
 
         # energy of accumulators (adder type: RCA)
@@ -441,6 +449,15 @@ class ImcArray(ImcUnit):
                 )  # output precision from adders_pv + required shifted bits
             nb_of_1b_adder_accumulator = accumulator_output_precision * self.wordline_dim_size * self.nb_of_banks
             nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator  # number of regs in an accumulator
+
+            component_type_str = f"{type(self).__module__}.{type(self).__name__}"
+            if component_type_str == "zigzag.hardware.architecture.imc_nvm_array.ImcNvmArray":
+                nb_of_1b_adder_accumulator = (accumulator_output_precision
+                                              * self.bitline_dim_size
+                                              / (self.adc_share_factor * (self.weight_precision / self.cells_size) )
+                                              * self.nb_of_banks)
+                nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator
+
             energy_accumulators = (
                 self.get_1b_adder_energy() * nb_of_1b_adder_accumulator
                 + self.get_1b_reg_energy() * nb_of_1b_reg_accumulator

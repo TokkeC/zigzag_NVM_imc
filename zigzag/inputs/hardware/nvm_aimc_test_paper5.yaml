@@ -1,13 +1,13 @@
-name: nvm_aimc3 # A 28 nm RRAM-based 81.1 TOPS/mm^2/bit CIM Macro with Uniform and linear 64 read channels under 512 4-bit inputs (28 nm)
-# 2T2R array
+name: nvm_aimc4 # 40 nm 64 kB A 40nm 64kb 26.56TOPS/W 2.37Mb/mm² RRAM Binary/Compute-in-Memory Macro..." (Spetalnick et al., ISSCC 2022)
+# 1T1R array
 
 memories:
   cells:
-    size: 4 # 2T2R, 1 such cell can hold 16 values, 4 bits, 8 discrete levels for every RERAM CELL
-    r_bw: 4 # Reading and Writing them all at once
-    w_bw: 4 # Reading and Writing them all at once
+    size: 1 # 1T1R, with ReRAM only holding 1 bit
+    r_bw: 1 # Reading and Writing them all at once
+    w_bw: 1 # Reading and Writing them all at once
     r_cost: 0 #BECAUSE IT IS NVM CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
-    w_cost: 0.025 # Writing 4bit weights into the cell -> Now as 12.5 (2.5*5 *2) pJ per 4 bit cell
+    w_cost: 0.080 # Writing 8bit weights into the cell -> Now as 10 pJ per 1 bit cell
     area: 0 #0.0000125 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
     r_port: 0
     w_port: 0
@@ -19,12 +19,12 @@ memories:
         tl: rw_port_1
     served_dimensions: [] # Fully unrolled over all multipliers
 
-  rf_1B: #Also ReRAM actually!
+  rf_1B: #SRAM !!! 512 kB SRAM Buffer (for activations)
     size: 8
     r_bw: 8
     w_bw: 8
-    r_cost: 0.080
-    w_cost: 0.080
+    r_cost: 0.021
+    w_cost: 0.021
     area: 0.0000125
     r_port: 1
     w_port: 1
@@ -104,22 +104,11 @@ memories:
 operational_array:
   is_imc: True
   is_nvm: True
+  is_crossbar: False # is 2T2R -> 1T1R in zigzag
   imc_type: analog
-  input_precision: [4, 4] # unit: bit, Inputs and Weights
-  bit_serial_precision: 4 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
-  adc_resolution: 8 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
-  # Actually the ADC resolution is 8 bit, but due to the relaxed requirements they could shrink them quite a bit
+  input_precision: [1, 1] # unit: bit, Inputs and Weights
+  bit_serial_precision: 1 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
+  adc_resolution: 4 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
+  # Actually the quantization is near 6 bit, but they use a 4 bit ADC with some extra circuitry
   dimensions: [D1, D2]
-  sizes: [512, 512]  #1 adc per 8 columns -> 64 ADCs
-
-nvm_param:
-  nvm_array_type: 2T2R
-  tech_node: 0.028
-  V_read: 0.2
-  I_LRS: 0.0000050
-  I_HRS: 0.0000001
-  V_wl_swing_read: 0.9
-  V_bl_swing_read: 0.2
-  ADC_share_factor: 8
-  cell_area_F_multiplier: 500
-  # area_access_transistor_mm2: # let is be computed by the framework
+  sizes: [256, 256] #1024x1024 (but for bits) #1 adc per 8 columns -> 64 ADCs

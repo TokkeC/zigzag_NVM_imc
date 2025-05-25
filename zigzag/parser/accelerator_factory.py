@@ -99,8 +99,6 @@ class AcceleratorFactory:
         op_array_data: dict[str, Any] = self.data["operational_array"]
 
         is_nvm = op_array_data.get("is_nvm", False)
-        is_crossbar = op_array_data.get("is_crossbar", False)
-
         is_analog_imc = op_array_data["imc_type"] == "analog"
         bit_serial_precision = op_array_data["bit_serial_precision"]
         input_precision = op_array_data["input_precision"]
@@ -117,15 +115,17 @@ class AcceleratorFactory:
         auto_cost_extraction = cells_data["auto_cost_extraction"]
 
         if is_nvm:
+            nvm_param: dict[str, Any] = self.data["nvm_param"]
+
             return ImcNvmArray(
                 is_analog_imc = is_analog_imc,
-                is_crossbar = is_crossbar,
                 bit_serial_precision = bit_serial_precision,
                 input_precision = input_precision,
                 adc_resolution = adc_resolution,
                 cells_size = cells_size,
                 cells_area = cells_area,
                 dimension_sizes = dimension_sizes,
+                nvm_param_dict = nvm_param,
                 auto_cost_extraction = auto_cost_extraction,
             )
 

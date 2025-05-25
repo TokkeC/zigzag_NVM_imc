@@ -2,9 +2,9 @@ name: nvm_aimc1 # Light_CiM (28 nm)
 
 memories:
   cells:
-    size: 8 # Weight precision is 8 bits, and I'll just set it as 1 weight is 1 cell
-    r_bw: 8 # Reading and Writing them all at once
-    w_bw: 8 # Reading and Writing them all at once
+    size: 1
+    r_bw: 1 # Reading and Writing them all at once
+    w_bw: 1 # Reading and Writing them all at once
     r_cost: 0 #BECAUSE IT IS NVM CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
     w_cost: 0.080 # Writing 8bit weights into the cell -> Now as 10 pJ per 1 bit cell
     area: 0.0000125 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
@@ -33,7 +33,7 @@ memories:
     ports:
       - fh: w_port_1
         tl: r_port_1
-    served_dimensions: [D1,D3]
+    served_dimensions: [D1]
 
   rf_2B:
     size: 8
@@ -52,7 +52,7 @@ memories:
         tl: r_port_1
         fl: w_port_2
         th: r_port_2
-    served_dimensions: [D2,D3]
+    served_dimensions: [D2]
 
   sram_256KB:
     size: 262144
@@ -75,7 +75,7 @@ memories:
         tl: r_port_1
         fl: w_port_1
         th: r_port_1
-    served_dimensions: [D1, D2, D3]
+    served_dimensions: [D1, D2]
 
   dram:
     size: 10000000000
@@ -98,15 +98,28 @@ memories:
         tl: rw_port_1
         fl: rw_port_1
         th: rw_port_1
-    served_dimensions: [D1, D2, D3]
+    served_dimensions: [D1, D2]
 
 operational_array:
   is_imc: True
   is_nvm: True
-  is_crossbar: False # is 1T1R
+  # I should add an array type, NOT is_crossbar
+  # "nvm_array_type" with: "1T1R", "2T2R", "crossbar", "pseudo-crossbar"
   imc_type: analog
   input_precision: [8, 8] # unit: bit, Inputs and Weights
   bit_serial_precision: 1 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
   adc_resolution: 8 # unit: bit, Output precision, sensing precision
-  dimensions: [D1, D2, D3]
-  sizes: [12288, 1536, 168] #128x8x12 (but /8 for bits)
+  dimensions: [D1, D2]
+  sizes: [128, 128] #128x8x12 (but /8 for bits)
+
+nvm_param:
+  nvm_array_type: 1T1R
+  tech_node: 0.028
+  V_read: 0.2
+  I_LRS: 0.0000050
+  I_HRS: 0.0000001
+  V_wl_swing_read: 0.9
+  V_bl_swing_read: 0.2
+  ADC_share_factor: 16
+  cell_area_F_multiplier: 500
+  # area_access_transistor_mm2: # let is be computed by the framework

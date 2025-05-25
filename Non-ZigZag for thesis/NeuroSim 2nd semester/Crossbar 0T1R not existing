@@ -1,0 +1,10 @@
+There are 0T1R ReRAM arrays actually fabricated to do certain experiments.
+But not fully integrated to actually have a fully working CIM array, macro and chip.
+So there are barely any (non simulated) results and numbers to be found.
+
+The reason for this are the following:
+- Technological complexity, because it needs precise control of the resisitve states of the RRAM cell.
+- Manufacturing constraints, foundaries are in general not able to actually produce the cells at this nanoscale.
+- Limited Commercial Interest, 1T1R and 2T2R are used more often as they are more reliable and already used a lot.
+- Experimental research state, Still in first stage of testing and it's expensive to fabricate the chips to do actual research on.
+- Cost and Risk, it is expensive and risky to fabricate those chips, first simulations happen way more to not spend the money and time to actually fabricate the chip.

@@ -136,7 +136,6 @@ class AcceleratorValidator:
                 "multiplier_area": {"type": "float", "required": False},
                 # IMC properties
                 "is_nvm": {"type": "boolean", "default": False},
-                "is_crossbar": {"type": "boolean", "default": False},
                 "imc_type": {
                     "type": "string",
                     "allowed": ["analog", "digital"],
@@ -154,6 +153,82 @@ class AcceleratorValidator:
                     "required": True,
                     "nullable": True,
                     "default": None,
+                },
+            },
+        },
+        "nvm_param": {
+            "type": "dict",
+            "required": False,
+            "schema": {
+                "nvm_array_type": {
+                    "required": False,
+                    "type": "string",
+                    "allowed": ["1T1R", "2T2R", "crossbar", "pseudo_crossbar"],
+                    "nullable": True,
+                    "default": "1T1R",
+                },
+                "tech_node": {
+                        "type": "float",
+                        "required": False,
+                        "nullable": True,
+                        "default": 0.028,
+                },
+                "V_read": {
+                        "type": "float",
+                        "required": False,
+                        "nullable": True,
+                        "default": 0.15,
+                },
+                "I_LRS": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                    "default": 50e-6,
+                },
+                "I_HRS": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                    "default": 1e-6,
+                },
+                "G_LRS": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                },
+                "G_HRS": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                },
+                "V_wl_swing_read": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                    "default": 0.8,
+                },
+                "V_bl_swing_read": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                    "default": 0.15
+                },
+                "ADC_share_factor": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                    "default": 8
+                },
+                "cell_area_F_multiplier": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                    "default": 300,
+                },
+                "area_access_transistor_mm2": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
                 },
             },
         },
@@ -303,7 +378,7 @@ class AcceleratorValidator:
         if cells_data["served_dimensions"] != []:
             self.invalidate("IMC cells must be fully unrolled. Set `served_dimensions` to `[]`")
         # Memory size should be a multiply (e.g. 1,2,..) of weight precision.
-        if cells_data["size"] % self.data["operational_array"]["input_precision"][1] != 0:
+        if (not self.data.get("operational_array",dict()).get("is_nvm", False)) and (cells_data["size"] % self.data["operational_array"]["input_precision"][1] != 0):
             self.invalidate("IMC cells' size must be a multiply of the weight precision")
 
     def validate_operational_array(self):

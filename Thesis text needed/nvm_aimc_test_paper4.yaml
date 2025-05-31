@@ -1,0 +1,128 @@
+name: nvm_aimc4
+
+# A 28nm Nonvolatile AI Edge Processor using 4Mb Analog-Based Near-MemoryCompute ReRAM with 27.2 TOPS/W for Tiny AI Edge Devices (28 nm)
+# 1T1R array
+
+memories:
+  cells:
+    size: 1
+    r_bw: 1
+    w_bw: 1
+    r_cost: 0
+    w_cost: 0.0
+    area: 0
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 0
+    operands: [I2] # Weights
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+    served_dimensions: [] # Everything
+
+  rf_1B: # Registers
+    size: 8
+    r_bw: 8
+    w_bw: 8
+    r_cost: 0.021
+    w_cost: 0.021
+    area: 0.0000125
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    operands: [I1] # Inputs
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+    served_dimensions: [D1]
+
+  rf_2B: # Registers
+    size: 8
+    r_bw: 8
+    w_bw: 8
+    r_cost: 0.080
+    w_cost: 0.080
+    area: 0.0000125
+    r_port: 2
+    w_port: 2
+    rw_port: 0
+    latency: 1
+    operands: [I2] # Outputs
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_2
+        th: r_port_2
+    served_dimensions: [D2]
+
+  sram_256KB: # SRAM
+    size: 262144
+    r_bw: 512
+    w_bw: 512
+    r_cost: 416.16
+    w_cost: 378.4
+    area: 0
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    min_r_granularity: 64
+    min_w_granularity: 64
+    operands: [I1, O]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_1
+        th: r_port_1
+    served_dimensions: [D1, D2]
+
+  dram: # DRAM
+    size: 10000000000
+    r_bw: 64
+    w_bw: 64
+    r_cost: 700
+    w_cost: 750
+    area: 0
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 1
+    operands: [I1, I2, O]
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+        fl: rw_port_1
+        th: rw_port_1
+    served_dimensions: [D1, D2]
+
+operational_array: # Compute Array
+  is_imc: True
+  is_nvm: True # When ReRAM
+  imc_type: analog
+  input_precision: [8, 8] # unit: bit, Input and Weight precision
+  bit_serial_precision: 1 # unit: bit, #bits on wordline at oonce
+  adc_resolution: 4 # unit: bit, Output precision (by ADC)
+  dimensions: [D1, D2]
+  sizes: [1024, 1024] # How cells of memories.cells are ordered
+
+nvm_param:
+  nvm_array_type: 1T1R # 1T1R, 2T2R, pseudo-crossbar, crossbar
+  tech_node: 0.028 # F = 28 nm = 0.028 µm
+  V_read: 0.2 # Voltage over ReRAM during read
+  I_LRS: 0.000004 # Low Resistence State Current through ReRAM during read
+  I_HRS: 0.0000001 # High Resistence State Current through ReRAM during read
+  # G_LRS: # Optional input instead of I_LRS and I_HRS
+  # G_HRS: # Optional input instead of I_LRS and I_HRS
+  V_wl_swing_read: 0.8 # Voltage swing on wordlines (average)
+  V_bl_swing_read: 0.2 # Voltage swing on bitlines (average)
+  ADC_share_factor: 8 # 1 ADC per 'ADC_share_factor' bitlines
+  cell_area_F_multiplier: 300 # cell size in terms of F^2 (
+  # area_access_transistor_mm2: # Optional input if not calculated with F

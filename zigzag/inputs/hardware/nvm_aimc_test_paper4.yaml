@@ -110,7 +110,7 @@ operational_array:
   adc_resolution: 4 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
   # Actually the quantization is near 6 bit, but they use a 4 bit ADC with some extra circuitry
   dimensions: [D1, D2]
-  sizes: [1024, 1024] #1024x1024 (but for bits) #1 adc per 8 columns -> 64 ADCs
+  sizes: [128, 1024] #1024x1024 (but for bits) #first columns, after rows
 
 nvm_param:
   nvm_array_type: 1T1R

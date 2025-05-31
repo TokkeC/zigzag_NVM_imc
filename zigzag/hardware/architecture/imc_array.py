@@ -217,10 +217,6 @@ class ImcArray(ImcUnit):
                 + self.get_1b_reg_area() * nb_of_1b_reg_accumulator
             )
 
-
-        """
-            Im confused right now, because what is the difference between the cells and the mults right now?
-        """
         # total logic area of imc macros (exclude cells)
         self.area_breakdown = {
             "cells": area_cells,
@@ -231,14 +227,6 @@ class ImcArray(ImcUnit):
             "adders_pv": area_adders_pv,
             "accumulators": area_accumulators,
         }
-
-        # ###############################################
-        # """
-        #     I added this to see the area
-        # """
-        # print(self.area_breakdown)
-        # ###############################################
-
         self.area = sum([v for v in self.area_breakdown.values()])
         # Just adding up the whole breakdown to 1 number
 
@@ -428,11 +416,7 @@ class ImcArray(ImcUnit):
                 math.log2(nb_inputs_of_adder_pv) - 0.5
             )
         nb_of_adder_trees_pv = self.wordline_dim_size * self.nb_of_banks
-
         component_type_str = f"{type(self).__module__}.{type(self).__name__}"
-        if component_type_str == "zigzag.hardware.architecture.imc_nvm_array.ImcNvmArray":
-            nb_of_adder_trees_pv = (self.bitline_dim_size * self.nb_of_banks) / (self.adc_share_factor * (self.weight_precision / self.cells_size) )
-
         energy_adders_pv = self.get_1b_adder_energy() * nb_of_1b_adder_per_tree_pv * nb_of_adder_trees_pv
 
         # energy of accumulators (adder type: RCA)
@@ -449,14 +433,6 @@ class ImcArray(ImcUnit):
                 )  # output precision from adders_pv + required shifted bits
             nb_of_1b_adder_accumulator = accumulator_output_precision * self.wordline_dim_size * self.nb_of_banks
             nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator  # number of regs in an accumulator
-
-            component_type_str = f"{type(self).__module__}.{type(self).__name__}"
-            if component_type_str == "zigzag.hardware.architecture.imc_nvm_array.ImcNvmArray":
-                nb_of_1b_adder_accumulator = (accumulator_output_precision
-                                              * self.bitline_dim_size
-                                              / (self.adc_share_factor * (self.weight_precision / self.cells_size) )
-                                              * self.nb_of_banks)
-                nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator
 
             energy_accumulators = (
                 self.get_1b_adder_energy() * nb_of_1b_adder_accumulator

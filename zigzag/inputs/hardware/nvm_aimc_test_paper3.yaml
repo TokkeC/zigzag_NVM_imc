@@ -110,10 +110,10 @@ operational_array:
   adc_resolution: 8 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
   # Actually the ADC resolution is 8 bit, but due to the relaxed requirements they could shrink them quite a bit
   dimensions: [D1, D2]
-  sizes: [512, 512]  #1 adc per 8 columns -> 64 ADCs
+  sizes: [512, 512]  # first columns, after rows
 
 nvm_param:
-  nvm_array_type: 2T2R
+  nvm_array_type: 2T2R_pseudo_crossbar
   tech_node: 0.028
   V_read: 0.2
   I_LRS: 0.0000050

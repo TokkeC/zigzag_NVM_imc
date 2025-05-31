@@ -1,0 +1,34 @@
+@name:: nvm_aimc2
+# A 28 nm RRAM-based 81.1 TOPS/mm^2/bit CIM Macro with Uniform and linear 64 read channels under 512 4-bit inputs (By: P. Yao, et al.)
+
+@memories::
+  @cells::
+    @size:: 4 # Multi-level Cell (MLC)
+    @w_cost:: 0.025
+    @operands:: [I2] # weights
+    # rest not shown for readability
+  @rf_1B:: # not shown for readability
+  @rf_2B:: # not shown for readability
+  @sram_256KB:: # not shown for readability
+  @dram:: # not shown for readability
+
+@operational_array::
+  @is_imc:: True
+  @is_nvm:: True
+  @imc_type:: analog
+  @input_precision:: [4, 4] # unit: bit, I/W precision
+  @bit_serial_precision:: 4 # unit: bit, #bits on WL at once
+  @adc_resolution:: 8 # unit: bit, Output precision (by ADC)
+  @dimensions:: [D1, D2]
+  @sizes:: [512, 512]  # How cells of memories.cells are ordered
+
+@nvm_param::
+  @nvm_array_type:: 2T2R # 1T1R, 2T2R, pseudo-crossbar, crossbar
+  @tech_node:: 0.028 # F = 28 nm = 0.028 um # Voltage over ReRAM during read
+  @V_read:: 0.2 # Voltage over ReRAM during read
+  @I_LRS:: 0.000005 # Low Resistance Read Current ReRAM
+  @I_HRS:: 0.0000001 # High Resistance Read Current ReRAM
+  @V_wl_swing_read:: 0.9 # Voltage swing on WLs (average)
+  @V_bl_swing_read:: 0.2 # Voltage swing on BLs (average)
+  @ADC_share_factor:: 8 # 1 ADC per 'ADC_share_factor' bitlines
+  @cell_area_F_multiplier:: 500 # cell size in terms of F^2

@@ -387,7 +387,7 @@ class ImcUnit(OperationalArrayABC):
             single_pe_precharge_energy = (
                 (tech_param["wl_cap"] * (tech_param["vdd"] ** 2))
                 + (tech_param["bl_cap"] * (tech_param["vdd"] ** 2) * group_depth)
-            ) * (self.weight_precision)
+                * self.weight_precision)
             energy_precharging = single_pe_precharge_energy * nb_of_precharge_times
             # Calculate mapped_group_depth
             mapped_group_depth = 1

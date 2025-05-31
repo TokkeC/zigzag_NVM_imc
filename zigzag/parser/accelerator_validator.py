@@ -163,7 +163,7 @@ class AcceleratorValidator:
                 "nvm_array_type": {
                     "required": False,
                     "type": "string",
-                    "allowed": ["1T1R", "2T2R", "crossbar", "pseudo_crossbar"],
+                    "allowed": ["1T1R", "2T2R", "crossbar", "1T1R_pseudo_crossbar", "2T2R_pseudo_crossbar"],
                     "nullable": True,
                     "default": "1T1R",
                 },

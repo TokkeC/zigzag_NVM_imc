@@ -79,7 +79,8 @@ class ImcNvmArray(ImcArray):
         # To avoid confusion, the amount of wordlines are the bitline_dim_size, and vice versa
         # This means that in the .yaml hardware configuration file, D1 refers to the amount of columns
         self.wordline_amount = self.bitline_dim_size
-        self.bitline_amount = self.wordline_dim_size * (self.weight_precision / self.cells_size)
+        num_physical_reram_devices_per_synaptic_weight = math.ceil(self.weight_precision / self.cells_size)
+        self.bitline_amount = self.wordline_dim_size * num_physical_reram_devices_per_synaptic_weight
         # This last thing is done in this way, to still get the right array size,
         # but such that the mapping still does what it is expected to do
 
@@ -129,20 +130,6 @@ class ImcNvmArray(ImcArray):
             return 0
         return 0.0  # No separate access device for pure crossbar (area assumed in cell)
 
-    def get_num_access_devices_per_logical_cell(self) -> int:
-        """
-            Returns the number of access devices (transistors) per logical ReRAM cell, creating a cell which stores self.weigh_precision.
-            A unit storing self.weight_precision bits, is stored across (self.weight_precision / self.cells_size) physical ReRAM devices.
-            Each physical ReRAM cell has a single ReRAM device, storing 'self.cells_size' bits (MLC or SLC)!
-            For 2T2R, a logical weight cell uses two ReRAM devices, each with a transistor!
-        """
-        num_physical_reram_devices_per_weight = math.ceil(self.weight_precision / self.cells_size)
-        if self.nvm_array_type == NVM_ARRAY_TYPE_1T1R or self.nvm_array_type == NVM_ARRAY_TYPE_1T1R_PSEUDO_CROSSBAR:
-            return 1 * num_physical_reram_devices_per_weight  # 1T
-        if self.nvm_array_type == NVM_ARRAY_TYPE_2T2R or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR:
-            return 2 * num_physical_reram_devices_per_weight  # 2T
-        return 0  # Crossbar
-
     def calculate_driver_info(
             self,
             # Capacitance parameters, defaults are the estimates for 28nm
@@ -174,7 +161,7 @@ class ImcNvmArray(ImcArray):
         pitch_cell_height_um = cell_pitch_height_f_multiplier * f_um
 
         # 1. Word Line Load Capacitance (C_WL) for one WL
-        length_wl_um = num_cols * pitch_cell_width_um
+        length_wl_um = num_cols * number_transistors_per_cell * pitch_cell_width_um
         c_wire_wl_ff = cw_per_unit_length_ff_um * length_wl_um
         c_transistors_on_wl_ff = number_transistors_per_cell * num_cols * c_gate_per_tx_ff
         c_wl_ff = c_transistors_on_wl_ff + c_wire_wl_ff
@@ -204,6 +191,9 @@ class ImcNvmArray(ImcArray):
         s_blsl_driver = max(1.0, c_blsl_ff / c_in_inv_min_ff)
         area_one_blsl_driver_um2 = a_inv_min_um2 * s_blsl_driver
         area_total_blsl_drivers_um2 = number_transistors_per_cell * num_cols * area_one_blsl_driver_um2
+        if (self.nvm_array_type == NVM_ARRAY_TYPE_1T1R_PSEUDO_CROSSBAR or
+                self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR):
+            area_total_blsl_drivers_um2 = number_transistors_per_cell * num_rows * area_one_blsl_driver_um2
 
         results = {
             "C_WL_total_fF": c_wl_ff,
@@ -261,6 +251,20 @@ class ImcNvmArray(ImcArray):
             adc_energy = adc_energy / 1000  # unit: pJ
         return adc_area, adc_delay, adc_energy
 
+    def get_dac_cost(self) -> tuple[float, float, float]:
+        """single DAC cost calculation"""
+        # area (mm^2)
+        dac_area = 0  # neglected
+        # delay (ns)
+        dac_delay = 0  # neglected
+        # energy (fJ)
+        if self.bit_serial_precision == 1:
+            dac_energy = 0
+        else:
+            k0 = 50e-3  # pF
+            dac_energy = k0 * self.bit_serial_precision * self.tech_param["vdd"] ** 2  # unit: pJ
+        return dac_area, dac_delay, dac_energy
+
     def get_area(self):
         """
            Calculates the total area of the NVM CiM macro, breaking it down into components.
@@ -269,10 +273,7 @@ class ImcNvmArray(ImcArray):
         self.area_breakdown = dict()
 
         # 1. Area of the ReRAM cells themselves (the ReRAM material/stack)
-        # A synaptic weight stores self.weight_precision buts, with physical ReRAM devices that store self.cells_size bits.
-        num_physical_reram_devices_per_synaptic_weight = math.ceil(self.weight_precision / self.cells_size)
-        num_synaptic_weights_locations = self.wordline_amount * self.bitline_amount * self.nb_of_banks
-        total_physical_reram_devices = num_synaptic_weights_locations * num_physical_reram_devices_per_synaptic_weight
+        total_physical_reram_devices = self.wordline_amount * self.bitline_amount * self.nb_of_banks
         if self.nvm_array_type == NVM_ARRAY_TYPE_2T2R or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR:
             total_physical_reram_devices = total_physical_reram_devices * 2 # Two ReRAM devices for 2T2R
         area_reram_devices_total = total_physical_reram_devices * self.cells_area  # self.cells_area from YAML
@@ -318,7 +319,7 @@ class ImcNvmArray(ImcArray):
             adder_depth_pv = int(adder_depth_pv)  # float -> int for simplicity
             nb_of_1b_adder_per_tree_pv = input_precision_pv * (nb_inputs_of_adder_pv - 1) + nb_inputs_of_adder_pv * (
                     adder_depth_pv - 0.5)  # nb of 1b adders in a single place-value adder tree
-        nb_of_adder_trees_pv = self.bitline_amount * self.nb_of_banks / total_sharing_factor # amount of ADCs
+        nb_of_adder_trees_pv = self.bitline_amount * self.nb_of_banks / total_sharing_factor / nb_inputs_of_adder_pv # amount of ADCs/ how many inputs
         area_adders_pv = self.get_1b_adder_area() * nb_of_1b_adder_per_tree_pv * nb_of_adder_trees_pv
         self.area_breakdown["adders_pv"] = area_adders_pv  # Place-value adders after ADCs
 
@@ -340,8 +341,8 @@ class ImcNvmArray(ImcArray):
 
         # 6. Area of Peripheral Drivers (Wordline drivers, Bitline/Sourceline drivers)
         driver_areas_dict = self.calculate_driver_info() # via seperate function
-        self.area_breakdown["wl_drivers"] = driver_areas_dict.get("Area_total_WL_drivers_um2", 0)/(10**6)
-        self.area_breakdown["bl_drivers"] = driver_areas_dict.get("Area_total_BLSL_drivers_um2", 0)/(10**6)
+        self.area_breakdown["wl_drivers"] = self.nb_of_banks * driver_areas_dict.get("Area_total_WL_drivers_um2", 0)/(10**6)
+        self.area_breakdown["bl_drivers"] = self.nb_of_banks * driver_areas_dict.get("Area_total_BLSL_drivers_um2", 0)/(10**6)
 
         self.area = sum(self.area_breakdown.values())
 
@@ -448,7 +449,7 @@ class ImcNvmArray(ImcArray):
         num_bl_to_drive = num_cols_activated # Same as activated amount
         if (self.nvm_array_type == NVM_ARRAY_TYPE_1T1R_PSEUDO_CROSSBAR
                 or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR): # BLs to drive along wl direction
-            num_bl_to_drive = num_rows_activated
+            num_bl_to_drive = num_wl_to_drive
         if (self.nvm_array_type == NVM_ARRAY_TYPE_2T2R
                 or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR): # 2 BLs per cell column/row
             num_bl_to_drive = 2 * num_bl_to_drive
@@ -482,20 +483,20 @@ class ImcNvmArray(ImcArray):
 
         # --- 2. Line Driver Energy (Dynamic CV^2) ---
         # For peak energy, typically one significant transition is considered.
-        alpha_switching = 1.0
-        beta_switching = 1.0
+        alpha_switching = 0.5 * 2 #charging and discharging after full computation
+        beta_switching = 1.0 * 2 #charging and discharging after one cycle
 
         # WL Driver Energy
         e_wl_drivers_j = (alpha_switching * num_wl_to_drive *
                           c_wl_avg_f * (self.ReRAM_param["V_wl_swing_read"] ** 2))
         self.peak_energy_breakdown["wl_drivers"] = e_wl_drivers_j * 1e12 * self.nb_of_banks
-        # BL Driver Energy
+        # BL Driver Energy, the energy delivered during holding of the voltage duringthe cycle is taken care of by the cell reading energy
         e_bl_drivers_j = (beta_switching * num_bl_to_drive *
                            c_bl_avg_f * (self.ReRAM_param["V_bl_swing_read"] ** 2))
         self.peak_energy_breakdown["bl_drivers"] = e_bl_drivers_j * 1e12 * self.nb_of_banks
 
         # --- 3. DAC Energy ---
-        total_dac_energy_pj = self.get_dac_cost()[2] * num_rows_activated # Also static power consumption
+        total_dac_energy_pj = self.get_dac_cost()[2] * num_rows_activated # every cycle needed again
         self.peak_energy_breakdown["dacs"] = total_dac_energy_pj * self.nb_of_banks
 
         # --- 4. ADC Energy ---
@@ -514,7 +515,7 @@ class ImcNvmArray(ImcArray):
         else:
             nb_of_1b_adder_per_tree_pv = input_precision_pv *(nb_inputs_of_adder_pv - 1) + nb_inputs_of_adder_pv * (
                                         math.log2(nb_inputs_of_adder_pv) - 0.5)
-        nb_of_adder_trees_pv = self.bitline_amount * self.nb_of_banks / total_sharing_factor # amount of ADCs
+        nb_of_adder_trees_pv = num_cols_activated / nb_inputs_of_adder_pv * self.nb_of_banks # amount of ADCs
         # Assumption: adders_pv are placed after ADCs and before accumulators, combining multiple ADC outputs to one!
         energy_adders_pv = self.get_1b_adder_energy() * nb_of_1b_adder_per_tree_pv * nb_of_adder_trees_pv
         self.peak_energy_breakdown["adders_pv"] = energy_adders_pv
@@ -527,8 +528,7 @@ class ImcNvmArray(ImcArray):
             # output precision from adders_pv + required shifted bits
             # more accumulators needed, for every possible output, not just for amount of adders_pv
             # but only the same amount as adder_pv trees do actually switch
-            nb_of_1b_adder_accumulator = (accumulator_output_precision * self.nb_of_banks
-                                          * self.bitline_amount / total_sharing_factor)
+            nb_of_1b_adder_accumulator = accumulator_output_precision * self.nb_of_banks * num_cols_activated / (self.weight_precision / self.cells_size)
             # Assumption: accumulator is placed behind the adders_pv and accumulates for multiple input cycles!
             nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator  # number of regs in an accumulator
             energy_accumulators = ( self.get_1b_adder_energy() * nb_of_1b_adder_accumulator
@@ -549,9 +549,9 @@ class ImcNvmArray(ImcArray):
             / (self.weight_precision / self.cells_size) # cells together to make weight precision -> bl dimension sharing
             / self.adc_share_factor # ADCs shared over how many SYNAPTIC cells (stores self.weight_precision) -> bl dimension sharing
             * self.nb_of_banks) # amount of macros/banks
-        nb_of_bit_operations_per_cycle = (
-            nb_of_macs_per_cycle * 2 # 1 MAC is an addition and a multiplication
-            * self.weight_precision * self.activation_precision) # times input and weight precisions
+        nb_of_operations_per_cycle = nb_of_macs_per_cycle * 2 # 1 MAC is an addition and a multiplication
+        nb_of_bit_macs_per_cycle = nb_of_macs_per_cycle * self.weight_precision * self.activation_precision # times input and weight precisions
+        nb_of_bit_operations_per_cycle = nb_of_bit_macs_per_cycle * 2 # 1 MAC is an addition and a multiplication
 
         # latency and energy calculations from other functions (saved as attributes)
         clock_cycle_period = self.tclk  # unit: ns
@@ -560,9 +560,9 @@ class ImcNvmArray(ImcArray):
         imc_area = self.area  # unit: mm^2
 
         # Performance characteristics calculations, both in terms of operations and bit-operations
-        tops_peak = nb_of_macs_per_cycle * 2 / clock_cycle_period / 1000
+        tops_peak = nb_of_operations_per_cycle / clock_cycle_period / 1000
         tops_peak_bits = nb_of_bit_operations_per_cycle / clock_cycle_period / 1000
-        topsw_peak = nb_of_macs_per_cycle * 2 / peak_energy_per_cycle
+        topsw_peak = nb_of_operations_per_cycle / peak_energy_per_cycle
         topsw_peak_bits = nb_of_bit_operations_per_cycle / peak_energy_per_cycle
         topsmm2_peak = tops_peak / imc_area
         topsmm2_peak_bits = tops_peak_bits / imc_area
@@ -620,8 +620,8 @@ class ImcNvmArray(ImcArray):
         num_bl_to_drive_partly = num_cols_activated_partly
         if (self.nvm_array_type == NVM_ARRAY_TYPE_1T1R_PSEUDO_CROSSBAR
                 or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR):  # BLs to drive along wl direction
-            num_bl_to_drive_full = num_rows_activated
-            num_bl_to_drive_partly = num_rows_activated
+            num_bl_to_drive_full = num_wl_to_drive / float((reading_array_full_amount + reading_array_partly_amount))
+            num_bl_to_drive_partly = num_wl_to_drive / float((reading_array_full_amount + reading_array_partly_amount))
         if (self.nvm_array_type == NVM_ARRAY_TYPE_2T2R
                 or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR):  # 2 BLs per cell column/row
             num_bl_to_drive_full = 2 * num_bl_to_drive_full
@@ -658,9 +658,8 @@ class ImcNvmArray(ImcArray):
         self.energy_breakdown["cells"] = total_array_cell_current_energy_j * 1e12 * amount_of_repeating_macro  # Convert J to pJ
 
         # --- 2. Line Driver Energy (Dynamic CV^2) ---
-        alpha_switching = 1.0
-        beta_switching = 1.0
-
+        alpha_switching = 0.5 * 2 #charging and discharging
+        beta_switching = 1.0 * 2 #charging and discharging
         # WL Driver Energy -> Once at the start energy
         e_wl_drivers_j = (alpha_switching * num_wl_to_drive *
                           c_wl_avg_f * (self.ReRAM_param["V_wl_swing_read"] ** 2)) # just once until new inputs
@@ -675,7 +674,7 @@ class ImcNvmArray(ImcArray):
         self.energy_breakdown["bl_drivers"] = e_bl_drivers_j * 1e12 * amount_of_repeating_macro
 
         # --- 3. DAC Energy ---
-        total_dac_energy_pj = self.get_dac_cost()[2] * num_rows_activated
+        total_dac_energy_pj = self.get_dac_cost()[2] * num_rows_activated * (reading_array_full_amount + reading_array_partly_amount)
         self.energy_breakdown["dacs"] = total_dac_energy_pj * amount_of_repeating_macro
 
         # --- 4. ADC Energy ---
@@ -698,9 +697,9 @@ class ImcNvmArray(ImcArray):
                     math.log2(nb_inputs_of_adder_pv) - 0.5)
         # Assumption: adders_pv are placed after ADCs and before accumulators, combining multiple ADC outputs to one!
         energy_adders_pv_full = (self.get_1b_adder_energy() * nb_of_1b_adder_per_tree_pv
-                                * num_cols_activated_max * reading_array_full_amount)
+                                * (num_cols_activated_max / nb_inputs_of_adder_pv)  * reading_array_full_amount)
         energy_adders_pv_partly = (self.get_1b_adder_energy() * nb_of_1b_adder_per_tree_pv
-                                 * num_cols_activated_partly * reading_array_partly_amount)
+                                * (math.ceil(num_cols_activated_partly / float(nb_inputs_of_adder_pv))) * reading_array_partly_amount)
         energy_adders_pv = energy_adders_pv_full + energy_adders_pv_partly
         self.energy_breakdown["adders_pv"] = energy_adders_pv * amount_of_repeating_macro
 
@@ -712,13 +711,15 @@ class ImcNvmArray(ImcArray):
             # output precision from adders_pv + required shifted bits
             # but only the same amount as adder_pv trees do actually switch
             nb_of_1b_adder_accumulator = (accumulator_output_precision
-                                * (num_cols_activated_max * reading_array_full_amount
-                                   + num_cols_activated_partly * reading_array_partly_amount))
+                * ((num_cols_activated_max / (self.weight_precision/self.cells_size) )
+                    * reading_array_full_amount
+                +   math.ceil((num_cols_activated_partly / float(self.weight_precision/self.cells_size)))
+                    * reading_array_partly_amount))
             # Assumption: accumulator is placed behind the adders_pv and accumulates for multiple input cycles!
             nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator  # number of regs in an accumulator
             energy_accumulators = (self.get_1b_adder_energy() * nb_of_1b_adder_accumulator
                                    + self.get_1b_reg_energy() * nb_of_1b_reg_accumulator)
-        self.peak_energy_breakdown["accumulators"] = energy_accumulators
+        self.peak_energy_breakdown["accumulators"] = energy_accumulators * amount_of_repeating_macro
 
         self.energy = sum([v for v in self.energy_breakdown.values()])
         return self.energy_breakdown

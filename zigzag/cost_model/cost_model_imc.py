@@ -131,17 +131,20 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
         super().calc_data_loading_latency()
         # find the cycle count per mac
         cycles_per_mac = self.operational_array.activation_precision / self.operational_array.bit_serial_precision
+
+        # For ImcNvmArray
+        if hasattr(self.operational_array, 'is_nvm') and self.operational_array.is_nvm:
+            cycles_per_mac = ( (self.operational_array.activation_precision / self.operational_array.bit_serial_precision) # input cycles
+                            * (self.operational_array.adc_share_factor * (self.operational_array.weight_precision / self.operational_array.cells_size)) #output/ADCcycles
+                               )
+            # The energy DOES take into account the cases for which not so many cycles are needed, but here it supposes that there will be latency
+            # and that the amount of cycles keeps going to the max possible for a full array to compute! Each such cycle takes self.operational_array.tclk time!
+
         super().calc_overall_latency(cycles_per_mac=cycles_per_mac)
 
     def update_tclk(self):
         """! This function calculate the Tclk for IMC (In-Memory-Computing)"""
 
-        """
-        ###########################
-            This is the actual LATENCY/CLOCK calculation for the CIM!!!
-        ###########################
-        """
-        # Both are calculated in imc_array.py in the function get_tclk()
         self.tclk = self.operational_array.tclk
         self.tclk_breakdown = self.operational_array.tclk_breakdown
 

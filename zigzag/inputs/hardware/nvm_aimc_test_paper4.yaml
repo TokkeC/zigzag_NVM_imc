@@ -121,5 +121,5 @@ nvm_param:
   V_wl_swing_read: 0.8
   V_bl_swing_read: 0.2
   ADC_share_factor: 8
-  cell_area_F_multiplier: 300
+  cell_area_F_multiplier: 600
   # area_access_transistor_mm2: # let is be computed by the framework

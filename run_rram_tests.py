@@ -54,50 +54,50 @@ for accelerator_rram in accelerator_list:
 # for the same set of contexts/papers you want to compare.
 metrics_data_list = [
     {
-        'title': 'Energy',
-        'unit': 'Normalized energy (pJ/pJ)',
+        'title': 'Peak Energy',
+        'unit': 'Normalised energy (%)',
         'comparisons': [
             {
-                'name': 'Paper 4 (T.-H. Wen, et al.)',
-                'user_breakdown':{'cells': 72.34166153846154, 'mults': 0, 'wl_drivers': 42.96010466825452, 'bl_drivers': 0.6599441417659073, 'dacs': 0, 'adcs': 5.18731776, 'adders_regular': 0, 'adders_pv': 2.6127359999999995, 'accumulators': 1.6329599999999997},
+                'name': '1T1R \n Wen, VLSI 2023',
+                'user_breakdown': {'Cells': 72.34166153846154, 'WL Drivers': 43.381386647656036, 'BL Drivers': 1.3725485309570031, 'DACs': 0, 'ADCs': 5.18731776, 'PV Adders': 0.32659199999999994, 'Accumulators': 0.20411999999999997},
                 'paper_reported_total': 125
             },
             {
-                'name': 'Paper 3 (P. Yao, et al.)',
-                'user_breakdown': {'cells': 385.65415384615386, 'mults': 0, 'wl_drivers': 215.66023412807732, 'bl_drivers': 1.3568833050902378, 'dacs': 82.94400000000002, 'adcs': 44.869386240000004, 'adders_regular': 0, 'adders_pv': 6.531839999999998, 'accumulators': 0},
-                'paper_reported_total': 1667.5827 # 953.857
+                'name': '2T2R PC \n Yao, ESSERC 2024',
+                'user_breakdown': {'Cells': 385.65415384615386, 'WL Drivers': 218.98382825615465, 'BL Drivers': 6.0840456407219, 'DACs': 82.94400000000002, 'ADCs': 44.869386240000004, 'PV Adders': 0.0, 'Accumulators': 0},
+                'paper_reported_total': 953.857 # 1667.5827 with buffer
             },
         ]
     },
     {
         'title': 'Latency',
-        'unit': ' Normalized latency (ns/ns)',
+        'unit': ' Normalised latency (%)',
         'comparisons': [
             {
-                'name': 'Paper 4 (T.-H. Wen, et al.)',
-                'user_breakdown': {'cells': 0, 'dacs': 0, 'adcs': 10.769230769230768, 'mults': 0, 'adders_regular': 0, 'adders_pv': 1.3384, 'accumulators': 0.8795200000000001, 'wl_drivers': 0, 'bl_drivers': 0},
+                'name': '1T1R \n Wen, VLSI 2023',
+                'user_breakdown': {'Cells': 0, 'WL Drivers': 0, 'BL Drivers': 0, 'DACs': 0, 'ADCs': 10.769230769230768, 'PV Adders': 1.3384, 'Accumulators': 0.8795200000000001},
                 'paper_reported_total': 12.04705882
             },
             {
-                'name': 'Paper 3 (P. Yao, et al.)',
-                'user_breakdown': {'cells': 0, 'dacs': 0, 'adcs': 23.076923076923073, 'mults': 0, 'adders_regular': 0, 'adders_pv': 0.7265600000000001, 'accumulators': 0, 'wl_drivers': 0, 'bl_drivers': 0},
+                'name': '2T2R PC \n Yao, ESSERC 2024',
+                'user_breakdown': {'Cells': 0, 'WL Drivers': 0, 'BL Drivers': 0, 'DACs': 0, 'ADCs': 23.076923076923073, 'PV Adders': 0, 'Accumulators': 0},
                 'paper_reported_total': 23.08
             },
         ]
     },
     {
         'title': 'Area',
-        'unit': 'Normalized area (mm$^2$/mm$^2$)',
+        'unit': 'Normalised area (%)',
         'comparisons': [
             {
-                'name': 'Paper 4 (T.-H. Wen, et al.)',
-                'user_breakdown': {'IO pads (rough estimate)': 4,'cells': 0, 'dacs': 0, 'adcs': 0.0029284645108206254, 'mults': 0.9865003008, 'adders_regular': 0, 'adders_pv': 0.2353987584, 'accumulators': 0.17353113599999997, 'wl_drivers': 0.16840361029955775, 'bl_drivers': 0.041391696571557696},
+                'name': '1T1R \n Wen, VLSI 2023',
+                'user_breakdown': {'IO pads': 4,'Cells': 0, 'Access TXs': 0.4932501504, 'DACs': 0, 'ADCs': 0.0029284645108206254, 'PV Adders': 0.0004597632, 'Accumulators': 0.021691391999999997, 'WL Drivers': 0.17005503565881164, 'BL Drivers': 0.04304312193081162},
                 'paper_reported_total': 6.071428571
             },
             {
-                'name': 'Paper 3 (P. Yao, et al.)',
-                'user_breakdown': {'cells': 0, 'dacs': 0, 'adcs': 0.13341969370468265, 'mults': 0.205520896, 'adders_regular': 0, 'adders_pv': 0.073562112, 'accumulators': 0, 'wl_drivers': 0.08349512274390747, 'bl_drivers': 0.021275930223814923},
-                'paper_reported_total': 0.56
+                'name': '2T2R PC \n Yao, ESSERC 2024',
+                'user_breakdown': {'Cells': 0, 'Access TXs': 0.205520896, 'DACs': 0, 'ADCs': 0.13341969370468265, 'PV Adders': 0.0, 'Accumulators': 0, 'WL Drivers': 0.08478188708781494, 'BL Drivers': 0.02384945891162985},
+                'paper_reported_total': 0.448 # 0.56 with buffer
             },
         ]
     }
@@ -105,7 +105,7 @@ metrics_data_list = [
 
 # --- 2. Define Colors ---
 component_colors_hex = [
-    '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b',
+    '#1f77b4', '#ff7f0e', '#d62728', '#9467bd', '#8c564b',
     '#e377c2', '#bcbd22', '#17becf', '#aec7e8', '#ffbb78', '#98df8a',
     '#ff9896', '#c5b0d5', '#c49c94'
 ]
@@ -141,9 +141,9 @@ bar_width_single = 0.4
 
 for i, metric_data in enumerate(metrics_data_list):
     ax = axes[i]
-    ax.set_title(metric_data['title'], fontsize=14, pad=15)
-    ax.set_ylabel(metric_data['unit'], fontsize=11)
-    ax.tick_params(axis='both', which='major', labelsize=9)
+    ax.set_title(metric_data['title'], fontsize=18, pad=15)
+    ax.set_ylabel(metric_data['unit'], fontsize=15)
+    ax.tick_params(axis='both', which='major', labelsize=10)
 
     comparisons_list = metric_data['comparisons']
     num_comparison_sets = len(comparisons_list)
@@ -169,8 +169,15 @@ for i, metric_data in enumerate(metrics_data_list):
                        color=paper_total_bar_color, label=p_bar_label)
         if not paper_total_legend_handle: paper_total_legend_handle = p_bar
 
+        if metric_data['title'] == "Area":
+            unit_added = ' mm$^2$'
+        elif metric_data['title'] == "Latency":
+            unit_added = ' ns'
+        else:
+            unit_added = ' pJ'
+
         ax.text(paper_bar_center_x, paper_total_value/paper_total_value_to_normalize + 0.02 * (max_y_val_subplot or 1),
-                f'{paper_total_value:.2f}', ha='center', va='bottom', fontsize=8)
+                f'{paper_total_value:.2f}' + unit_added, ha='center', va='bottom', fontsize=11)
 
         # --- Plot User's Stacked Breakdown Bar (Stacked, RIGHT bar in the pair) ---
         user_bar_center_x = group_interface_x + bar_width_single / 2
@@ -187,10 +194,11 @@ for i, metric_data in enumerate(metrics_data_list):
                 legend_handles_for_components[component_name] = rect
 
         ax.text(user_bar_center_x, calculated_user_total/paper_total_value_to_normalize + 0.02 * (max_y_val_subplot or 1),
-                f'{calculated_user_total:.2f}\n{calculated_user_total/paper_total_value_to_normalize:.2f}%', ha='center', va='bottom', fontsize=8, fontweight='bold')
+                f'{calculated_user_total:.2f}' + unit_added + f'\n{calculated_user_total/paper_total_value_to_normalize:.2f}%',
+                ha='center', va='bottom', fontsize=11, fontweight='bold')
 
     ax.set_xticks(x_group_centers)
-    ax.set_xticklabels(x_group_labels, rotation=30, ha='right', fontsize=9)
+    ax.set_xticklabels(x_group_labels, rotation=30, ha='right', fontsize=12)
     if max_y_val_subplot > 0:
         ax.set_ylim(0, max_y_val_subplot * 1.1)
     else:
@@ -216,17 +224,17 @@ if all_legend_handles:
 
     fig.legend(handles=all_legend_handles,  # title="Legend Key",
                loc='lower center',  # Anchored at its bottom-center
-               bbox_to_anchor=(0.5, 0.85),  # Positioned relative to figure: 0.5 is fig center-x, 0.95 is near fig top
+               bbox_to_anchor=(0.5, 0.83),  # Positioned relative to figure: 0.5 is fig center-x, 0.95 is near fig top
                ncol=ncol_legend,
-               fontsize=9, title_fontsize=10, frameon=False)  # frameon=False can look cleaner for top legends
+               fontsize=15, title_fontsize=15, frameon=False)  # frameon=False can look cleaner for top legends
 
 # --- 6. Add Super Title and Adjust Layout ---
 # Super title will be below the legend if legend's bbox_to_anchor y is high enough, or adjust y here
-fig.suptitle("Model validation ReRAM-CiMs: Paper numbers - Calculated breakdowns", fontsize=16,
-             y=1.00)  # Lowered y to be below top legend
+fig.suptitle("Cost Model Validation", fontsize=20,
+             y=0.99)  # Lowered y to be below top legend
 
 # Adjust subplot parameters to make space for top legend and subtitle
 # Increase 'top' to push subplots down, making space. Adjust 'wspace' for horizontal gaps.
 plt.subplots_adjust(left=0.06, right=0.98, bottom=0.15, top=0.78, wspace=0.3)
 
-# plt.show()
+plt.show()

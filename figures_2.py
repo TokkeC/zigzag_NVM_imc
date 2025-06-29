@@ -14,34 +14,28 @@ metrics_data_list = [
         'comparisons': [
             {
                 'name': '1T1R \n Wen, VLSI 2023',
-                'user_breakdown': {'Cells': 72.34166153846154, 'WL Drivers': 43.381386647656036,
-                                   'BL Drivers': 1.3725485309570031, 'DACs': 0, 'ADCs': 5.18731776,
-                                   'PV Adders': 0.32659199999999994, 'Accumulators': 0.20411999999999997},
-                'paper_reported_total': 125
+                'user_breakdown': {'Cells': 54.25624615384615, 'WL Drivers': 43.25606484072191, 'BL Drivers': 0.7632468591132585, 'DACs': 0, 'ADCs': 20.74927104, 'PV Adders': 1.306367996, 'Accumulators': 0.8164799},
+                'paper_reported_total': 106.1139896
             },
             {
                 'name': '2T2R PC \n Yao, ESSERC 2024',
-                'user_breakdown': {'Cells': 385.65415384615386, 'WL Drivers': 218.98382825615465,
-                                   'BL Drivers': 6.0840456407219, 'DACs': 82.94400000000002, 'ADCs': 44.869386240000004,
-                                   'PV Adders': 0.0, 'Accumulators': 0},
-                'paper_reported_total': 953.857
+                'user_breakdown': {'Cells': 230.52445011659978, 'WL Drivers': 328.4757423842319, 'BL Drivers': 1.7090084204787814, 'DACs': 82.94400000000002, 'ADCs': 44.869386240000004, 'PV Adders': 0.0, 'Accumulators': 0},
+                'paper_reported_total': 953.857 # 1667.5827 with buffer
             },
         ]
     },
     {
         'title': 'Latency',
-        'unit': 'Normalised latency (%)',
+        'unit': ' Normalised latency (%)',
         'comparisons': [
             {
                 'name': '1T1R \n Wen, VLSI 2023',
-                'user_breakdown': {'Cells': 0, 'WL Drivers': 0, 'BL Drivers': 0, 'DACs': 0, 'ADCs': 10.769230769230768,
-                                   'PV Adders': 1.3384, 'Accumulators': 0.8795200000000001},
+                'user_breakdown': {'Cells': 0, 'WL Drivers': 0, 'BL Drivers': 0, 'DACs': 0, 'ADCs': 10.769230769230768, 'PV Adders': 1.3384, 'Accumulators': 0.8795200000000001},
                 'paper_reported_total': 12.04705882
             },
             {
                 'name': '2T2R PC \n Yao, ESSERC 2024',
-                'user_breakdown': {'Cells': 0, 'WL Drivers': 0, 'BL Drivers': 0, 'DACs': 0, 'ADCs': 23.076923076923073,
-                                   'PV Adders': 0, 'Accumulators': 0},
+                'user_breakdown': {'Cells': 0, 'WL Drivers': 0, 'BL Drivers': 0, 'DACs': 0, 'ADCs': 23.076923076923073, 'PV Adders': 0, 'Accumulators': 0},
                 'paper_reported_total': 23.08
             },
         ]
@@ -52,18 +46,13 @@ metrics_data_list = [
         'comparisons': [
             {
                 'name': '1T1R \n Wen, VLSI 2023',
-                'user_breakdown': {'IO pads': 4, 'Cells': 0, 'Access TXs': 0.4932501504, 'DACs': 0,
-                                   'ADCs': 0.0029284645108206254, 'PV Adders': 0.0004597632,
-                                   'Accumulators': 0.021691391999999997, 'WL Drivers': 0.17005503565881164,
-                                   'BL Drivers': 0.04304312193081162},
-                'paper_reported_total': 6.071428571
+                'user_breakdown': {'Cells': 0, 'Access TXs': 0.411041792, 'DACs': 0, 'ADCs': 0.0029284645108206254, 'PV Adders': 0.0004597632, 'Accumulators': 0.021691391999999997, 'WL Drivers': 0.16956377417562987, 'BL Drivers': 0.04255186044762985},
+                'paper_reported_total': 0.75 # scaled with 0.5 ,without scaling estimation 1.517857143 # for 4 macros 6
             },
             {
                 'name': '2T2R PC \n Yao, ESSERC 2024',
-                'user_breakdown': {'Cells': 0, 'Access TXs': 0.205520896, 'DACs': 0, 'ADCs': 0.13341969370468265,
-                                   'PV Adders': 0.0, 'Accumulators': 0, 'WL Drivers': 0.08478188708781494,
-                                   'BL Drivers': 0.02384945891162985},
-                'paper_reported_total': 0.448
+                'user_breakdown': {'Cells': 0, 'Access TXs': 0.205520896, 'DACs': 0, 'ADCs': 0.13341969370468265, 'PV Adders': 0.0, 'Accumulators': 0, 'WL Drivers': 0.08478188708781494, 'BL Drivers': 0.02384945891162985},
+                'paper_reported_total': 0.448 # 0.56 with buffer
             },
         ]
     }
@@ -187,7 +176,7 @@ for metric_data in metrics_data_list:
         # Place legend above the plot
         ax.legend(handles=all_legend_handles,
                   loc='lower center',
-                  bbox_to_anchor=(0.35, 1.0),  # Position above the plot area
+                  bbox_to_anchor=(0.41, 1.0),  # Position above the plot area
                   ncol=num_legend_items // 2 if num_legend_items > 4 else num_legend_items,
                   fontsize=12, frameon=False)
 

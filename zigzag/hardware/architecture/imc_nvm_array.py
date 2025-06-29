@@ -62,6 +62,7 @@ class ImcNvmArray(ImcArray):
         self.ReRAM_param = nvm_param_dict
         self.nvm_array_type = self.ReRAM_param["nvm_array_type"]
         self.adc_share_factor = self.ReRAM_param["ADC_share_factor"]
+        self.cells_size_nvm = self.ReRAM_param["size_nvm"]
 
         # Grandparent class function, ImcUnit.__init__()
         ImcUnit.__init__(self,
@@ -79,7 +80,7 @@ class ImcNvmArray(ImcArray):
         # To avoid confusion, the amount of wordlines are the bitline_dim_size, and vice versa
         # This means that in the .yaml hardware configuration file, D1 refers to the amount of columns
         self.wordline_amount = self.bitline_dim_size
-        num_physical_reram_devices_per_synaptic_weight = math.ceil(self.weight_precision / self.cells_size)
+        num_physical_reram_devices_per_synaptic_weight = math.ceil(self.weight_precision / self.cells_size_nvm)
         self.bitline_amount = self.wordline_dim_size * num_physical_reram_devices_per_synaptic_weight
         # This last thing is done in this way, to still get the right array size,
         # but such that the mapping still does what it is expected to do
@@ -299,23 +300,23 @@ class ImcNvmArray(ImcArray):
         area_adcs = 0
         if self.is_aimc:  # Analog IMC needs ADCs for outputs
             # ADCs are typically along the bitline dimension.
-            amount_of_adc_bitlines = math.ceil(self.bitline_amount / (self.weight_precision/self.cells_size))
+            amount_of_adc_bitlines = math.ceil(self.bitline_amount / (self.weight_precision/self.cells_size_nvm))
             num_adcs = math.ceil( amount_of_adc_bitlines / self.adc_share_factor) * self.nb_of_banks
             area_adcs = num_adcs * self.get_adc_cost()[0]
         self.area_breakdown["adcs"] = area_adcs
 
         # 5. Area of Digital Adders and Accumulators (if any, from base class)
         self.area_breakdown["adders_regular"] = 0 # Only for DIMC
-        total_sharing_factor = (self.adc_share_factor * (self.weight_precision / self.cells_size))
+        total_sharing_factor = (self.adc_share_factor * (self.weight_precision / self.cells_size_nvm))
 
         # area of adder trees with place values (type: RCA)
-        nb_inputs_of_adder_pv = self.weight_precision / self.cells_size  # amount of bitlines that give input
+        nb_inputs_of_adder_pv = self.weight_precision / self.cells_size_nvm  # amount of bitlines that give input
         input_precision_pv = self.adc_resolution
         if nb_inputs_of_adder_pv == 1:
             nb_of_1b_adder_per_tree_pv = 0
         else:
             adder_depth_pv = math.log2(nb_inputs_of_adder_pv)
-            assert (adder_depth_pv % 1 == 0), f"[weight_precision/self.cells_size] is not in the power of 2."
+            assert (adder_depth_pv % 1 == 0), f"[weight_precision/self.cells_size_nvm] is not in the power of 2."
             adder_depth_pv = int(adder_depth_pv)  # float -> int for simplicity
             nb_of_1b_adder_per_tree_pv = input_precision_pv * (nb_inputs_of_adder_pv - 1) + nb_inputs_of_adder_pv * (
                     adder_depth_pv - 0.5)  # nb of 1b adders in a single place-value adder tree
@@ -331,7 +332,7 @@ class ImcNvmArray(ImcArray):
             # output precision from adders_pv + required shifted bits
             # more accumulators needed, for every possible output, not just for amount of adders_pv
             nb_of_1b_adder_accumulator = (accumulator_output_precision * self.nb_of_banks
-                                          * self.bitline_amount / (self.weight_precision / self.cells_size ))
+                                          * self.bitline_amount / (self.weight_precision / self.cells_size_nvm ))
             nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator  # number of regs in an accumulator
             area_accumulators = (
                     self.get_1b_adder_area() * nb_of_1b_adder_accumulator
@@ -387,7 +388,7 @@ class ImcNvmArray(ImcArray):
 
         # delay of adder trees with place value (type: RCA)
         # worst path: in-to-sum -> in-to-sum -> ... -> in-to-cout -> cin-to-cout -> ... -> cin-to-cout
-        nb_inputs_of_adder_pv = self.weight_precision/self.cells_size
+        nb_inputs_of_adder_pv = self.weight_precision/self.cells_size_nvm
         input_precision_pv = self.adc_resolution
         if nb_inputs_of_adder_pv == 1:
             adder_pv_output_precision = input_precision_pv
@@ -437,13 +438,16 @@ class ImcNvmArray(ImcArray):
         # Rows and Columns activated: Peak energy -> Complete macro
         num_rows_activated = self.wordline_amount
         num_cols_activated = ((self.bitline_amount /
-                               (self.adc_share_factor * (self.weight_precision / self.cells_size) ))
+                               (self.adc_share_factor * (self.weight_precision / self.cells_size_nvm) ))
                               ) # During one quantization cycle
         num_all_active_cells_in_op = num_rows_activated * num_cols_activated
+        if (self.nvm_array_type == NVM_ARRAY_TYPE_2T2R
+                or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR):  # 2 reram per cell
+            num_all_active_cells_in_op = 2 * num_all_active_cells_in_op
 
         # WLs and BLs that need to be driven (BLs in this are along the dimension of the ADCs (sometimes called SLs))
         num_wl_to_drive = (num_rows_activated
-                          / (self.adc_share_factor * (self.weight_precision / self.cells_size)) )
+                          / (self.adc_share_factor * (self.weight_precision / self.cells_size_nvm)) )
         # Different compare to num_rows_activated, as the WLs active stay active over multiple quantization cycles
         # We need to divide by how many quantization cycles happen (total sharing factor of ADCs)!
         num_bl_to_drive = num_cols_activated # Same as activated amount
@@ -484,6 +488,10 @@ class ImcNvmArray(ImcArray):
         # --- 2. Line Driver Energy (Dynamic CV^2) ---
         # For peak energy, typically one significant transition is considered.
         alpha_switching = 0.5 * 2 #charging and discharging after full computation
+        if ((self.nvm_array_type == NVM_ARRAY_TYPE_1T1R_PSEUDO_CROSSBAR
+            or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR)\
+                and (self.bit_serial_precision > 1)):
+            alpha_switching = 0.75*2 #bitlines do most weighting rather than the wordlines
         beta_switching = 1.0 * 2 #charging and discharging after one cycle
 
         # WL Driver Energy
@@ -505,10 +513,10 @@ class ImcNvmArray(ImcArray):
 
         # --- 5. Digital Logic Energy (Adders, Accumulators etc.) ---
         self.peak_energy_breakdown["adders_regular"] = 0 # Only needed for DIMC, which is not modeled
-        total_sharing_factor = (self.adc_share_factor * (self.weight_precision / self.cells_size))
+        total_sharing_factor = (self.adc_share_factor * (self.weight_precision / self.cells_size_nvm))
 
         # energy of adder trees with place values (type: RCA) (AIMC case)
-        nb_inputs_of_adder_pv = self.weight_precision/self.cells_size # amount of bitlines that give input
+        nb_inputs_of_adder_pv = self.weight_precision/self.cells_size_nvm # amount of bitlines that give input
         input_precision_pv = self.adc_resolution
         if nb_inputs_of_adder_pv == 1: # No adders_pv needed if no combining because of no multiple bitlines make a single output
             nb_of_1b_adder_per_tree_pv = 0
@@ -528,7 +536,7 @@ class ImcNvmArray(ImcArray):
             # output precision from adders_pv + required shifted bits
             # more accumulators needed, for every possible output, not just for amount of adders_pv
             # but only the same amount as adder_pv trees do actually switch
-            nb_of_1b_adder_accumulator = accumulator_output_precision * self.nb_of_banks * num_cols_activated / (self.weight_precision / self.cells_size)
+            nb_of_1b_adder_accumulator = accumulator_output_precision * self.nb_of_banks * num_cols_activated / (self.weight_precision / self.cells_size_nvm)
             # Assumption: accumulator is placed behind the adders_pv and accumulates for multiple input cycles!
             nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator  # number of regs in an accumulator
             energy_accumulators = ( self.get_1b_adder_energy() * nb_of_1b_adder_accumulator
@@ -546,7 +554,7 @@ class ImcNvmArray(ImcArray):
         nb_of_macs_per_cycle = (
             self.wordline_amount * self.bitline_amount
             / (self.activation_precision / self.bit_serial_precision) # how many cycles for a mac on inputs -> wl dimension sharing
-            / (self.weight_precision / self.cells_size) # cells together to make weight precision -> bl dimension sharing
+            / (self.weight_precision / self.cells_size_nvm) # cells together to make weight precision -> bl dimension sharing
             / self.adc_share_factor # ADCs shared over how many SYNAPTIC cells (stores self.weight_precision) -> bl dimension sharing
             * self.nb_of_banks) # amount of macros/banks
         nb_of_operations_per_cycle = nb_of_macs_per_cycle * 2 # 1 MAC is an addition and a multiplication
@@ -601,18 +609,25 @@ class ImcNvmArray(ImcArray):
         ) = self.get_mapped_oa_dim(layer, self.wl_dim, self.bl_dim)
         self.mapped_rows_total_per_macro = mapped_rows_total_per_macro
         amount_of_repeating_macro = macro_activation_times * (self.activation_precision / self.bit_serial_precision)
-        mapped_cols_per_macro_real = mapped_cols_per_macro * (self.weight_precision / self.cells_size)
+        mapped_cols_per_macro_real = mapped_cols_per_macro * (self.weight_precision / self.cells_size_nvm)
 
         # Rows and Columns activated:
         num_rows_activated = mapped_rows_total_per_macro
         num_cols_activated_max = ((self.bitline_amount /
-                               (self.adc_share_factor * (self.weight_precision / self.cells_size)))
+                               (self.adc_share_factor * (self.weight_precision / self.cells_size_nvm)))
                                )  # During one quantization cycle
         reading_array_full_amount = math.floor(mapped_cols_per_macro_real / num_cols_activated_max)
         num_cols_activated_partly = mapped_cols_per_macro_real % num_cols_activated_max
         reading_array_partly_amount = (1 if num_cols_activated_partly != 0 else 0)
         num_all_active_cells_in_op_full = num_rows_activated * num_cols_activated_max
         num_all_active_cells_in_op_partly = num_rows_activated * num_cols_activated_partly
+
+        if (self.nvm_array_type == NVM_ARRAY_TYPE_2T2R
+                or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR):  # 2 devices per cell
+            num_all_active_cells_in_op_full = 2 * num_all_active_cells_in_op_full
+            num_all_active_cells_in_op_partly = 2 * num_all_active_cells_in_op_partly
+
+
 
         # WLs and BLs that need to be driven (BLs in this are along the dimension of the ADCs (sometimes called SLs))
         num_wl_to_drive = num_rows_activated
@@ -658,8 +673,13 @@ class ImcNvmArray(ImcArray):
         self.energy_breakdown["cells"] = total_array_cell_current_energy_j * 1e12 * amount_of_repeating_macro  # Convert J to pJ
 
         # --- 2. Line Driver Energy (Dynamic CV^2) ---
-        alpha_switching = 0.5 * 2 #charging and discharging
-        beta_switching = 1.0 * 2 #charging and discharging
+        alpha_switching = 0.5 * 2  # charging and discharging after full computation
+        if ((self.nvm_array_type == NVM_ARRAY_TYPE_1T1R_PSEUDO_CROSSBAR
+             or self.nvm_array_type == NVM_ARRAY_TYPE_2T2R_PSEUDO_CROSSBAR) and
+            (self.bit_serial_precision > 1)):
+            alpha_switching = 0.75 * 2  # bitlines do most weighting rather than the wordlines
+        beta_switching = 1.0 * 2  # charging and discharging after one cycle
+
         # WL Driver Energy -> Once at the start energy
         e_wl_drivers_j = (alpha_switching * num_wl_to_drive *
                           c_wl_avg_f * (self.ReRAM_param["V_wl_swing_read"] ** 2)) # just once until new inputs
@@ -688,7 +708,7 @@ class ImcNvmArray(ImcArray):
         self.energy_breakdown["adders_regular"] = 0
 
         # energy of adder trees with place values (type: RCA) (AIMC case)
-        nb_inputs_of_adder_pv = self.weight_precision / self.cells_size  # amount of bitlines that give input
+        nb_inputs_of_adder_pv = self.weight_precision / self.cells_size_nvm  # amount of bitlines that give input
         input_precision_pv = self.adc_resolution
         if nb_inputs_of_adder_pv == 1:  # No adders_pv needed if no combining because of no multiple bitlines make a single output
             nb_of_1b_adder_per_tree_pv = 0
@@ -711,9 +731,9 @@ class ImcNvmArray(ImcArray):
             # output precision from adders_pv + required shifted bits
             # but only the same amount as adder_pv trees do actually switch
             nb_of_1b_adder_accumulator = (accumulator_output_precision
-                * ((num_cols_activated_max / (self.weight_precision/self.cells_size) )
+                * ((num_cols_activated_max / (self.weight_precision/self.cells_size_nvm) )
                     * reading_array_full_amount
-                +   math.ceil((num_cols_activated_partly / float(self.weight_precision/self.cells_size)))
+                +   math.ceil((num_cols_activated_partly / float(self.weight_precision/self.cells_size_nvm)))
                     * reading_array_partly_amount))
             # Assumption: accumulator is placed behind the adders_pv and accumulates for multiple input cycles!
             nb_of_1b_reg_accumulator = nb_of_1b_adder_accumulator  # number of regs in an accumulator

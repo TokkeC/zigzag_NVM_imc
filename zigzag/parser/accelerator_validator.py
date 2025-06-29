@@ -173,6 +173,12 @@ class AcceleratorValidator:
                         "nullable": True,
                         "default": 0.028,
                 },
+                "size_nvm": {
+                    "type": "float",
+                    "required": False,
+                    "nullable": True,
+                    "default": 8,
+                },
                 "V_read": {
                         "type": "float",
                         "required": False,

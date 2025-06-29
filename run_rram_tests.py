@@ -59,12 +59,12 @@ metrics_data_list = [
         'comparisons': [
             {
                 'name': '1T1R \n Wen, VLSI 2023',
-                'user_breakdown': {'Cells': 72.34166153846154, 'WL Drivers': 43.381386647656036, 'BL Drivers': 1.3725485309570031, 'DACs': 0, 'ADCs': 5.18731776, 'PV Adders': 0.32659199999999994, 'Accumulators': 0.20411999999999997},
-                'paper_reported_total': 125
+                'user_breakdown': {'Cells': 54.25624615384615, 'WL Drivers': 43.25606484072191, 'BL Drivers': 0.7632468591132585, 'DACs': 0, 'ADCs': 20.74927104, 'PV Adders': 1.306367996, 'Accumulators': 0.8164799},
+                'paper_reported_total': 106.1139896
             },
             {
                 'name': '2T2R PC \n Yao, ESSERC 2024',
-                'user_breakdown': {'Cells': 385.65415384615386, 'WL Drivers': 218.98382825615465, 'BL Drivers': 6.0840456407219, 'DACs': 82.94400000000002, 'ADCs': 44.869386240000004, 'PV Adders': 0.0, 'Accumulators': 0},
+                'user_breakdown': {'Cells': 230.52445011659978, 'WL Drivers': 328.4757423842319, 'BL Drivers': 1.7090084204787814, 'DACs': 82.94400000000002, 'ADCs': 44.869386240000004, 'PV Adders': 0.0, 'Accumulators': 0},
                 'paper_reported_total': 953.857 # 1667.5827 with buffer
             },
         ]
@@ -91,8 +91,8 @@ metrics_data_list = [
         'comparisons': [
             {
                 'name': '1T1R \n Wen, VLSI 2023',
-                'user_breakdown': {'IO pads': 4,'Cells': 0, 'Access TXs': 0.4932501504, 'DACs': 0, 'ADCs': 0.0029284645108206254, 'PV Adders': 0.0004597632, 'Accumulators': 0.021691391999999997, 'WL Drivers': 0.17005503565881164, 'BL Drivers': 0.04304312193081162},
-                'paper_reported_total': 6.071428571
+                'user_breakdown': {'Cells': 0, 'Access TXs': 0.411041792, 'DACs': 0, 'ADCs': 0.0029284645108206254, 'PV Adders': 0.0004597632, 'Accumulators': 0.021691391999999997, 'WL Drivers': 0.16956377417562987, 'BL Drivers': 0.04255186044762985},
+                'paper_reported_total': 0.75 # scaled with 0.5 ,without scaling estimation 1.517857143 # for 4 macros 6.071428571
             },
             {
                 'name': '2T2R PC \n Yao, ESSERC 2024',
@@ -220,7 +220,7 @@ if all_legend_handles:
     # Calculate a reasonable number of columns for the legend
     num_legend_items = len(all_legend_handles)
     ncol_legend = num_legend_items if num_legend_items <= 8 else (
-        num_legend_items // 2 if num_legend_items <= 16 else 8)  # Adjust as needed
+        num_legend_items // 2 + 1 if num_legend_items <= 16 else 8)  # Adjust as needed
 
     fig.legend(handles=all_legend_handles,  # title="Legend Key",
                loc='lower center',  # Anchored at its bottom-center

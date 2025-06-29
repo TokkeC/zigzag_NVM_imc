@@ -7,7 +7,7 @@ memories:
     r_bw: 4 # Reading and Writing them all at once
     w_bw: 4 # Reading and Writing them all at once
     r_cost: 0 #BECAUSE IT IS NVM CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
-    w_cost: 0.025 # Writing 4bit weights into the cell -> Now as 12.5 (2.5*5 *2) pJ per 4 bit cell
+    w_cost: 44 # Same as a single 1-bit cell. (MLC)
     area: 0 #0.0000125 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
     r_port: 0
     w_port: 0
@@ -115,11 +115,14 @@ operational_array:
 nvm_param:
   nvm_array_type: 2T2R_pseudo_crossbar
   tech_node: 0.028
-  V_read: 0.2
-  I_LRS: 0.0000050
-  I_HRS: 0.0000001
+  size_nvm: 4 # ReRAM holding 4 bit
+  V_read: 0.1677
+#  I_LRS: 0.000004
+#  I_HRS: 0.0000001
+  G_LRS: 0.000009765625
+  G_HRS: 0.000001074219
   V_wl_swing_read: 0.9
-  V_bl_swing_read: 0.2
+  V_bl_swing_read: 0.106 # sqrt(0.15^2/2)
   ADC_share_factor: 8
   cell_area_F_multiplier: 500
   # area_access_transistor_mm2: # let is be computed by the framework

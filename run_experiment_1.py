@@ -2,7 +2,7 @@ import logging
 import math
 import re
 
-from zigzag.api import get_hardware_performance_zigzag
+# from zigzag.api import get_hardware_performance_zigzag
 from zigzag.parser.arguments import get_arg_parser
 from zigzag.stages.parser.accelerator_parser import AcceleratorParserStage
 from zigzag.parser.accelerator_factory import AcceleratorFactory, MemoryFactory
@@ -112,15 +112,15 @@ print(cacti_result)
 
 
 #Running ZigZag
-get_hardware_performance_zigzag(
-    workload=workload_rram,
-    accelerator=accelerator_rram,
-    mapping=mapping_rram,
-    opt="latency",
-    dump_folder=f"outputs/{experiment_id}",
-    pickle_filename=f"outputs/{pickle_name}.pickle",
-    in_memory_compute = True
-)
+# get_hardware_performance_zigzag(
+#     workload=workload_rram,
+#     accelerator=accelerator_rram,
+#     mapping=mapping_rram,
+#     opt="latency",
+#     dump_folder=f"outputs/{experiment_id}",
+#     pickle_filename=f"outputs/{pickle_name}.pickle",
+#     in_memory_compute = True
+# )
 
 
 

@@ -3,16 +3,16 @@ from zigzag.cacti.cacti_parser import CactiParser
 # --- 1. Define the parameters for the SRAM cache you want to model ---
 
 # Name for identification in logs
-memory_name = "sram_256KB"
+memory_name = "sram_512KB"
 
 # Memory type for CACTI
-memory_type = '"ram"'
+memory_type = "sram"
 
 # Technology node in micrometers (um)
 tech_node = 0.028  # 28nm
 
 # Total size in bits
-size_in_bits = 256 * 1024 * 8  # 512 KB
+size_in_bits = 512 * 1024 * 8  # 512 KB
 
 # Read and Write bandwidth in bits per cycle
 bandwidth = 512

@@ -109,7 +109,16 @@ with open(f"{self_gen_path}/cache.cfg.out", "r", encoding="UTF-8") as fp:
         else:
             for jj, each_value in enumerate(each_line.split(",")):
                 try:
-                    result[attribute_list[jj]].append(float(each_value))  # type: ignore
+                    # Check if the value is a valid number before trying to convert it
+                    if 'N/A' not in each_value:
+                        try:
+                            result[attribute_list[jj]].append(float(each_value))  # type: ignore
+                        except ValueError:
+                            # If it's still not a valid float for some reason, append a default value like 0
+                            result[attribute_list[jj]].append(0.0)
+                    else:
+                        # If the value is 'N/A', append a default value like 0
+                        result[attribute_list[jj]].append(0.0)
                 except IndexError:
                     pass
 

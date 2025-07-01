@@ -6,7 +6,7 @@ from zigzag.cacti.cacti_parser import CactiParser
 memory_name = "sram_256KB"
 
 # Memory type for CACTI
-memory_type = "ram"
+memory_type = "sram"
 
 # Technology node in micrometers (um)
 tech_node = 0.028  # 28nm

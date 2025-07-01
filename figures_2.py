@@ -19,7 +19,7 @@ metrics_data_list = [
             },
             {
                 'name': '2T2R PC \n Yao, ESSERC 2024',
-                'user_breakdown': {'Cells': 230.52445011659978, 'WL Drivers': 328.4757423842319, 'BL Drivers': 1.7090084204787814, 'DACs': 82.94400000000002, 'ADCs': 44.869386240000004, 'PV Adders': 0.0, 'Accumulators': 0},
+                'user_breakdown': {'Cells': 138.52800319487997, 'WL Drivers': 583.9568753497457, 'BL Drivers': 1.7090084204787814, 'DACs': 10.368000000000002, 'ADCs': 44.869386240000004, 'PV Adders': 0.0, 'Accumulators': 0},
                 'paper_reported_total': 953.857 # 1667.5827 with buffer
             },
         ]

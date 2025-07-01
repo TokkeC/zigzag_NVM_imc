@@ -1,25 +1,25 @@
-name: nvm_aimc4 # A 28nm Nonvolatile AI Edge Processor using 4Mb Analog-Based Near-MemoryCompute ReRAM with 27.2 TOPS/W for Tiny AI Edge Devices (28 nm)
+name: 1T1R_experiment_template
 # 1T1R array
 
 memories:
   cells:
-    size: 8 #synaptic cell for mapping
+    size: 8 #synaptic cell
     r_bw: 8 # Reading and Writing them all at once
     w_bw: 8 # Reading and Writing them all at once
-    r_cost: 0 #BECAUSE IT IS NVM CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
-    w_cost: 176 # Writing 8bit weights into the cell
-    area: 0 #0.0000125 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
+    r_cost: 0
+    w_cost: 123.51494401050451 # Writing 8 bit weights into the cell, according to the made costmodel
+    area: 0
     r_port: 0
     w_port: 0
     rw_port: 1
-    latency: 0 # Not on critical path
-    operands: [I2] # weights
+    latency: 0
+    operands: [I2]
     ports:
       - fh: rw_port_1
         tl: rw_port_1
-    served_dimensions: [] # Fully unrolled over all multipliers
+    served_dimensions: [] # Fully unrolled
 
-  rf_1B:
+  rf_1B: # Registers for inputs
     size: 8
     r_bw: 8
     w_bw: 8
@@ -36,7 +36,7 @@ memories:
         tl: r_port_1
     served_dimensions: [D1]
 
-  rf_2B:
+  rf_2B: # Registers for outputs (accumulators)
     size: 16
     r_bw: 16
     w_bw: 16
@@ -55,12 +55,12 @@ memories:
         th: r_port_2
     served_dimensions: [D2]
 
-  sram_256KB:
-    size: 262144
-    r_bw: 512
-    w_bw: 512
-    r_cost: 416.16
-    w_cost: 378.4
+  L1_SRAM_512KB:  # L1 memory level - On-chip SRAM buffer
+    size: 4194304 # unit: bit, 512 * 1024 * 8 bits
+    r_bw: 512 # unit: bit
+    w_bw: 512 # unit: bit
+    r_cost: 416.16 # unit: pJ, per 512 bits read
+    w_cost: 378.4 # unit: pJ, per 512 bits read
     area: 0
     r_port: 1
     w_port: 1
@@ -78,13 +78,13 @@ memories:
         th: r_port_1
     served_dimensions: [ D1, D2 ]
 
-  dram:
+  L2_DRAM: # L2 memory level - Off-chip DRAM
     size: 10000000000
     r_bw: 64
     w_bw: 64
-    r_cost: 700
-    w_cost: 750
-    area: 0
+    r_cost: 700 # unit: pJ, per 64 bits read
+    w_cost: 750 # unit: pJ, per 64 bits write
+    area: 0 # off-chip
     r_port: 0
     w_port: 0
     rw_port: 1
@@ -105,22 +105,22 @@ operational_array:
   is_imc: True
   is_nvm: True
   imc_type: analog
-  input_precision: [8, 8] # unit: bit, Inputs and Weights
-  bit_serial_precision: 1 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
-  adc_resolution: 4 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
+  input_precision: [8, 8] # unit: bit
+  bit_serial_precision: 1 # unit: bit
+  adc_resolution: 4 # unit: bit
   # Actually the quantization is near 6 bit, but they use a 4 bit ADC with some extra circuitry
   dimensions: [D1, D2]
-  sizes: [128, 1024] #1024x1024 (but for bits) #first columns, after rows
+  sizes: [128, 1024] #1024x1024 (but for bits) # [synaptic cols amount, rows amount]
 
 nvm_param:
-  nvm_array_type: 1T1R
-  tech_node: 0.028
-  size_nvm: 1 # ReRAM only holding 1 bit
-  V_read: 0.15
-  I_LRS: 0.000004
-  I_HRS: 0.0000001
-  V_wl_swing_read: 0.8
-  V_bl_swing_read: 0.15
-  ADC_share_factor: 8
+  nvm_array_type: 1T1R # array type
+  tech_node: 0.028 # unit: um, 28 nm technology node
+  size_nvm: 1 # unit: bit, SLC
+  V_read: 0.15 # unit: V
+  I_LRS: 0.000004 # unit: A, 4 uA
+  I_HRS: 0.0000001 # unit: A, 0.1 uA
+  V_wl_swing_read: 0.8 # unit: V
+  V_bl_swing_read: 0.15 # unit: V
+  ADC_share_factor: 8 # 64 columns per ADC, 8 synaptic columns per ADC
   cell_area_F_multiplier: 500
-  # area_access_transistor_mm2: # let it be computed by the framework
+

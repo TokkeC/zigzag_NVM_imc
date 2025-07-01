@@ -178,6 +178,8 @@ class ImcUnit(OperationalArrayABC):
         """
         cell_array_size = wordline_dim_size * bitline_dim_size * cells_size / 8  # array size. unit: byte
         array_bw = wordline_dim_size * weight_precision  # imc array bandwidth. unit: bit
+        print(cell_array_size)
+        print(array_bw)
 
         # we will call cacti to get the area (mm^2), access_time (ns), r_cost (nJ/access), w_cost (nJ/access)
         if __name__ == "imc_unit":

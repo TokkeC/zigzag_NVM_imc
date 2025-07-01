@@ -504,7 +504,7 @@ class ImcNvmArray(ImcArray):
         self.peak_energy_breakdown["bl_drivers"] = e_bl_drivers_j * 1e12 * self.nb_of_banks
 
         # --- 3. DAC Energy ---
-        total_dac_energy_pj = self.get_dac_cost()[2] * num_rows_activated # every cycle needed again
+        total_dac_energy_pj = (self.get_dac_cost()[2] * num_rows_activated) / (self.adc_share_factor * (self.weight_precision / self.cells_size_nvm) )
         self.peak_energy_breakdown["dacs"] = total_dac_energy_pj * self.nb_of_banks
 
         # --- 4. ADC Energy ---
@@ -694,7 +694,7 @@ class ImcNvmArray(ImcArray):
         self.energy_breakdown["bl_drivers"] = e_bl_drivers_j * 1e12 * amount_of_repeating_macro
 
         # --- 3. DAC Energy ---
-        total_dac_energy_pj = self.get_dac_cost()[2] * num_rows_activated * (reading_array_full_amount + reading_array_partly_amount)
+        total_dac_energy_pj = self.get_dac_cost()[2] * num_rows_activated
         self.energy_breakdown["dacs"] = total_dac_energy_pj * amount_of_repeating_macro
 
         # --- 4. ADC Energy ---

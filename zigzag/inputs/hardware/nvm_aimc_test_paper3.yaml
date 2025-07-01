@@ -116,12 +116,12 @@ nvm_param:
   nvm_array_type: 2T2R_pseudo_crossbar
   tech_node: 0.028
   size_nvm: 4 # ReRAM holding 4 bit
-  V_read: 0.1677
+  V_read: 0.130
 #  I_LRS: 0.000004
 #  I_HRS: 0.0000001
   G_LRS: 0.000009765625
   G_HRS: 0.000001074219
-  V_wl_swing_read: 0.9
+  V_wl_swing_read: 1.2
   V_bl_swing_read: 0.106 # sqrt(0.15^2/2)
   ADC_share_factor: 8
   cell_area_F_multiplier: 500

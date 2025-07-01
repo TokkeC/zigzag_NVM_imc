@@ -1,5 +1,5 @@
-name: nvm_aimc4 # A 28nm Nonvolatile AI Edge Processor using 4Mb Analog-Based Near-MemoryCompute ReRAM with 27.2 TOPS/W for Tiny AI Edge Devices (28 nm)
-# 1T1R array
+name: 2T2R_pseudo_crossbar_experiment_template
+# 2T2R Pseudo-Crossbar Array
 
 memories:
   cells:
@@ -7,7 +7,7 @@ memories:
     r_bw: 8 # Reading and Writing them all at once
     w_bw: 8 # Reading and Writing them all at once
     r_cost: 0 #BECAUSE IT IS NVM CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
-    w_cost: 176 # Writing 8bit weights into the cell
+    w_cost: 39.26873290771637 # Writing 8bit weights into the cell
     area: 0 #0.0000125 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
     r_port: 0
     w_port: 0
@@ -55,12 +55,12 @@ memories:
         th: r_port_2
     served_dimensions: [D2]
 
-  sram_256KB:
-    size: 262144
-    r_bw: 512
-    w_bw: 512
-    r_cost: 416.16
-    w_cost: 378.4
+  L1_SRAM_512KB: # L1 memory level - On-chip SRAM buffer
+    size: 4194304 # unit: bit, 512 * 1024 * 8 bits
+    r_bw: 512 # unit: bit
+    w_bw: 512 # unit: bit
+    r_cost: 416.16 # unit: pJ, per 512 bits read
+    w_cost: 378.4 # unit: pJ, per 512 bits read
     area: 0
     r_port: 1
     w_port: 1
@@ -78,13 +78,13 @@ memories:
         th: r_port_1
     served_dimensions: [ D1, D2 ]
 
-  dram:
+  L2_DRAM: # L2 memory level - Off-chip DRAM
     size: 10000000000
     r_bw: 64
     w_bw: 64
-    r_cost: 700
-    w_cost: 750
-    area: 0
+    r_cost: 700 # unit: pJ, per 64 bits read
+    w_cost: 750 # unit: pJ, per 64 bits write
+    area: 0 # off-chip
     r_port: 0
     w_port: 0
     rw_port: 1

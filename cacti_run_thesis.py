@@ -15,11 +15,11 @@ tech_node = 0.028  # 28nm
 size_in_bits = 256 * 1024 * 8  # 512 KB
 
 # Read and Write bandwidth in bits per cycle
-bandwidth = 1024
+bandwidth = 512
 
 # Port configuration
-read_ports = 1
-write_ports = 1
+read_ports = 2
+write_ports = 2
 read_write_ports = 0  # Use separate read and write ports
 
 # Number of banks the memory is divided into

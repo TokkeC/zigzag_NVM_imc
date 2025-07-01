@@ -7,7 +7,7 @@ import yaml
 
 # To make this file runnable
 sys.path.append(os.getcwd())
-from zigzag.cacti.cacti_master.cacti_config_creator import CactiConfig  # pylint: disable=C0413 # noqa: E402
+from cacti_config_creator import CactiConfig  # pylint: disable=C0413 # noqa: E402
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mem_type")

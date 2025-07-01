@@ -12,7 +12,7 @@ memory_type = "sram"
 tech_node = 0.028  # 28nm
 
 # Total size in bits
-size_in_bits = 256 * 1024 * 8  # 512 KB
+size_in_bits = 512 * 1024 * 8  # 512 KB
 
 # Read and Write bandwidth in bits per cycle
 bandwidth = 512

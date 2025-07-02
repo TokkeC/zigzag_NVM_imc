@@ -3,24 +3,24 @@ from zigzag.cacti.cacti_parser import CactiParser
 # --- 1. Define the parameters for the SRAM cache you want to model ---
 
 # Name for identification in logs
-memory_name = "dram_512KB"
+memory_name = "sram_512KB"
 
 # Memory type for CACTI
-memory_type = "dram"
+memory_type = "sram"
 
 # Technology node in micrometers (um)
 tech_node = 0.028  # 28nm
 
 # Total size in bits
-size_in_bits = 10000000000  # 512 KB
+size_in_bits = 512 * 1024 * 8  # 512 KB
 
 # Read and Write bandwidth in bits per cycle
-bandwidth = 64
+bandwidth = 512
 
 # Port configuration
-read_ports = 0
-write_ports = 0
-read_write_ports = 1
+read_ports = 1
+write_ports = 1
+read_write_ports = 0  # Use separate read and write ports
 
 # Number of banks the memory is divided into
 banks = 1

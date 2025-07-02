@@ -3,7 +3,7 @@ from zigzag.cacti.cacti_parser import CactiParser
 # --- 1. Define the parameters for the SRAM cache you want to model ---
 
 # Name for identification in logs
-memory_name = "sram_512KB"
+memory_name = "dram_512KB"
 
 # Memory type for CACTI
 memory_type = "dram"

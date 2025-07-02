@@ -6,21 +6,21 @@ from zigzag.cacti.cacti_parser import CactiParser
 memory_name = "sram_512KB"
 
 # Memory type for CACTI
-memory_type = "sram"
+memory_type = "dram"
 
 # Technology node in micrometers (um)
 tech_node = 0.028  # 28nm
 
 # Total size in bits
-size_in_bits = 512 * 1024 * 8  # 512 KB
+size_in_bits = 10000000000  # 512 KB
 
 # Read and Write bandwidth in bits per cycle
-bandwidth = 512
+bandwidth = 64
 
 # Port configuration
-read_ports = 1
-write_ports = 1
-read_write_ports = 0  # Use separate read and write ports
+read_ports = 0
+write_ports = 0
+read_write_ports = 1
 
 # Number of banks the memory is divided into
 banks = 1

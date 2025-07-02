@@ -15,7 +15,7 @@ tech_node = 0.028  # 28nm
 size_in_bits = 1 * 8  # 512 KB
 
 # Read and Write bandwidth in bits per cycle
-bandwidth = 8
+bandwidth = 1
 
 # Port configuration
 read_ports = 1

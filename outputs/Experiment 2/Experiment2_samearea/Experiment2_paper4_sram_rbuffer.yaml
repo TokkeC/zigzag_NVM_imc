@@ -1,0 +1,113 @@
+name: Experiment2_1T1R_sram_rbuffer
+
+memories:
+  cells:
+    size: 8
+    r_bw: 8
+    w_bw: 8
+    r_cost: 0
+    w_cost: 0.095
+    area: 0
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 0
+    operands: [I2]
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+    served_dimensions: [] # Fully unrolled
+
+  rf_1B: # Registers for inputs
+    size: 8
+    r_bw: 8
+    w_bw: 8
+    r_cost: 0.01
+    w_cost: 0.01
+    area: 0
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    operands: [I1]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+    served_dimensions: [D1]
+
+  rf_2B: # Registers for outputs (accumulators)
+    size: 16
+    r_bw: 16
+    w_bw: 16
+    r_cost: 0.021
+    w_cost: 0.021
+    area: 0
+    r_port: 2
+    w_port: 2
+    rw_port: 0
+    latency: 1
+    operands: [O]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_2
+        th: r_port_2
+    served_dimensions: [D2]
+
+  L1_ReRAM_2MB:  # L1 memory level - On-chip ReRAM buffer
+    size: 16777216 # unit: bit, 2048 * 1024 * 8 bits
+    r_bw: 512 # unit: bit
+    w_bw: 512 # unit: bit
+    r_cost: 200 # unit: pJ, per 512 bits read
+    w_cost: 2075 # unit: pJ, per 512 bits read
+    area: 1.7892 # kept the same and boosted the size
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1 #latency is higher, but within clock period
+    min_r_granularity: 64
+    min_w_granularity: 64
+    operands: [ I1, O ]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_1
+        th: r_port_1
+    served_dimensions: [ D1, D2 ]
+
+  L2_DRAM: # L2 memory level - Off-chip DRAM
+    size: 10000000000
+    r_bw: 64
+    w_bw: 64
+    r_cost: 700 # unit: pJ, per 64 bits read
+    w_cost: 750 # unit: pJ, per 64 bits write
+    area: 0 # off-chip
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 1
+    operands: [ I1, I2, O ]
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+        fl: rw_port_1
+        th: rw_port_1
+    served_dimensions: [ D1, D2 ]
+
+operational_array:
+  is_imc: True
+  is_nvm: False
+  imc_type: analog
+  input_precision: [8, 8] # unit: bit
+  bit_serial_precision: 1 # unit: bit
+  adc_resolution: 4 # unit: bit
+  # Actually the quantization is near 6 bit
+  dimensions: [D1, D2]
+  sizes: [106, 848] #1024x1024 (but for bits) # [synaptic cols amount, rows amount]
+  # same number of ADCs chosen!, WHICH IS ONLY 16, so 2 weights...

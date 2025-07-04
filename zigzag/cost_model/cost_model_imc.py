@@ -134,9 +134,12 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
 
         # For ImcNvmArray
         if hasattr(self.operational_array, 'is_nvm') and self.operational_array.is_nvm:
+            # cycles_per_mac = ( (self.operational_array.activation_precision / self.operational_array.bit_serial_precision) # input cycles
+            #                 * (self.operational_array.adc_share_factor * (self.operational_array.weight_precision / self.operational_array.cells_size_nvm)) #output/ADCcycles
+            #                    )
             cycles_per_mac = ( (self.operational_array.activation_precision / self.operational_array.bit_serial_precision) # input cycles
-                            * (self.operational_array.adc_share_factor * (self.operational_array.weight_precision / self.operational_array.cells_size_nvm)) #output/ADCcycles
-                               )
+                            * self.operational_array.number_of_cycles_for_layer) #output/ADCcycles
+
             # The energy DOES take into account the cases for which not so many cycles are needed, but here it supposes that there will be latency
             # and that the amount of cycles keeps going to the max possible for a full array to compute! Each such cycle takes self.operational_array.tclk time!
 

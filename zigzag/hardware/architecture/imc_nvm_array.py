@@ -63,6 +63,7 @@ class ImcNvmArray(ImcArray):
         self.nvm_array_type = self.ReRAM_param["nvm_array_type"]
         self.adc_share_factor = self.ReRAM_param["ADC_share_factor"]
         self.cells_size_nvm = self.ReRAM_param["size_nvm"]
+        self.is_nvm = True
 
         # Grandparent class function, ImcUnit.__init__()
         ImcUnit.__init__(self,
@@ -555,6 +556,7 @@ class ImcNvmArray(ImcArray):
             self.wordline_amount * self.bitline_amount
             / (self.activation_precision / self.bit_serial_precision) # how many cycles for a mac on inputs -> wl dimension sharing
             / (self.weight_precision / self.cells_size_nvm) # cells together to make weight precision -> bl dimension sharing
+            / (self.weight_precision / self.cells_size_nvm) # This with the adc share factor is the total adc share factor
             / self.adc_share_factor # ADCs shared over how many SYNAPTIC cells (stores self.weight_precision) -> bl dimension sharing
             * self.nb_of_banks) # amount of macros/banks
         nb_of_operations_per_cycle = nb_of_macs_per_cycle * 2 # 1 MAC is an addition and a multiplication
@@ -627,7 +629,7 @@ class ImcNvmArray(ImcArray):
             num_all_active_cells_in_op_full = 2 * num_all_active_cells_in_op_full
             num_all_active_cells_in_op_partly = 2 * num_all_active_cells_in_op_partly
 
-
+        self.number_of_cycles_for_layer = reading_array_partly_amount  +  reading_array_full_amount
 
         # WLs and BLs that need to be driven (BLs in this are along the dimension of the ADCs (sometimes called SLs))
         num_wl_to_drive = num_rows_activated

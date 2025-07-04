@@ -23,8 +23,8 @@ memories:
     size: 8
     r_bw: 8
     w_bw: 8
-    r_cost: 0.021
-    w_cost: 0.021
+    r_cost: 0.01
+    w_cost: 0.01
     area: 0
     r_port: 1
     w_port: 1
@@ -59,9 +59,9 @@ memories:
     size: 4194304 # unit: bit, 512 * 1024 * 8 bits
     r_bw: 512 # unit: bit
     w_bw: 512 # unit: bit
-    r_cost: 416.16 # unit: pJ, per 512 bits read
-    w_cost: 378.4 # unit: pJ, per 512 bits read
-    area: 0
+    r_cost: 171.6840 # unit: pJ, per 512 bits read
+    w_cost: 216.6800 # unit: pJ, per 512 bits read
+    area: 1.7892
     r_port: 1
     w_port: 1
     rw_port: 0

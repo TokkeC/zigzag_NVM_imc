@@ -223,40 +223,66 @@ if __name__ == '__main__':
     logging_format = "%(asctime)s - %(name)s.%(funcName)s +%(lineno)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging_level, format=logging_format)
 
-    # workload_list = ["zigzag/inputs/workload/resnet18.onnx",
-    #                  "zigzag/inputs/workload/resnet50.onnx",
-    #                  "zigzag/inputs/workload/mobilenetv2.onnx",
-    #                  "zigzag/inputs/workload/matmul_prefill.yaml",
-    #                  "zigzag/inputs/workload/matmul_decode.yaml"]
-    workload_list = ["zigzag/inputs/workload/resnet18.yaml"]
+    workload_list = ["zigzag/inputs/workload/resnet18.onnx",
+                     "zigzag/inputs/workload/resnet50.onnx",
+                     "zigzag/inputs/workload/mobilenetv2.onnx",
+                     "zigzag/inputs/workload/llama2-7b_conv_prefill.yaml",
+                     "zigzag/inputs/workload/llama2-7b_conv_decode.yaml"]
+    # workload_list = ["zigzag/inputs/workload/llama2-7b_conv_prefill.yaml",
+    #                  "zigzag/inputs/workload/llama2-7b_conv_decode.yaml"]
 
     mapping_path = "zigzag/inputs/mapping/default_imc_fornvm.yaml" # standard mapping
 
-
+    # i = 8
     for accelerator_path in accelerator_list:
-        for workload_path in workload_list:
+        accelerator = AcceleratorParserStage.parse_accelerator(accelerator_path)
 
-            hw_name = accelerator_path.split(".")[-1]
-            if hw_name == "yaml":
-                hw_name = re.split(r"/|\.", accelerator_path)[-2]
-            workload_name = re.split(r"/|\.", workload_path)[-1]
-            if workload_name == "onnx" or "yaml":
-                workload_name = re.split(r"/|\.", workload_path)[-2]
-            experiment_id = f"{hw_name}-{workload_name}"
-            pickle_name = f"{experiment_id}-saved_list_of_cmes"
-            dump_folder = f"outputs/{experiment_id}"
-            pickle_filename = f"outputs/{pickle_name}.pickle"
+        # for workload_path in workload_list:
+        #
+        #     hw_name = accelerator_path.split(".")[-1]
+        #     if hw_name == "yaml":
+        #         hw_name = re.split(r"/|\.", accelerator_path)[-2]
+        #     workload_name = re.split(r"/|\.", workload_path)[-1]
+        #     if workload_name == "onnx" or "yaml":
+        #         workload_name = re.split(r"/|\.", workload_path)[-2]
+        #     experiment_id = f"{hw_name}-{workload_name}"
+        #     pickle_name = f"{experiment_id}-saved_list_of_cmes"
+        #     dump_folder = f"outputs/{experiment_id}"
+        #     pickle_filename = f"outputs/{pickle_name}.pickle"
+        #
+        #     # accelerator = AcceleratorParserStage.parse_accelerator(accelerator_path)
+        #     # Running ZigZag
+        #     get_hardware_performance_zigzag(
+        #         workload = workload_path,
+        #         accelerator = accelerator_path,
+        #         mapping = mapping_path,
+        #         opt = "energy",
+        #         dump_folder = f"outputs/Experiment3/{experiment_id}",
+        #         pickle_filename = f"outputs/{pickle_name}.pickle",
+        #         in_memory_compute = True
+        #     )
 
-            # accelerator = AcceleratorParserStage.parse_accelerator(accelerator_path)
-            # Running ZigZag
-            get_hardware_performance_zigzag(
-                workload = workload_path,
-                accelerator = accelerator_path,
-                mapping = mapping_path,
-                opt = "energy",
-                dump_folder = f"outputs/Experiment3/{experiment_id}",
-                pickle_filename = f"outputs/{pickle_name}.pickle",
-                in_memory_compute = True
-            )
-
-
+        # i *= 2
+        # workload_path = f"zigzag/inputs/workload/peak_workloads/peak_workload_{i}.yaml"
+        # hw_name = accelerator_path.split(".")[-1]
+        # if hw_name == "yaml":
+        #     hw_name = re.split(r"/|\.", accelerator_path)[-2]
+        # workload_name = re.split(r"/|\.", workload_path)[-1]
+        # if workload_name == "onnx" or "yaml":
+        #     workload_name = "peak_workload"
+        # experiment_id = f"{hw_name}-{workload_name}"
+        # pickle_name = f"{experiment_id}-saved_list_of_cmes"
+        # dump_folder = f"outputs/{experiment_id}"
+        # pickle_filename = f"outputs/{pickle_name}.pickle"
+        #
+        # # accelerator = AcceleratorParserStage.parse_accelerator(accelerator_path)
+        # # Running ZigZag
+        # get_hardware_performance_zigzag(
+        #     workload=workload_path,
+        #     accelerator=accelerator_path,
+        #     mapping=mapping_path,
+        #     opt="energy",
+        #     dump_folder=f"outputs/Experiment3/{experiment_id}",
+        #     pickle_filename=f"outputs/{pickle_name}.pickle",
+        #     in_memory_compute=True
+        # )

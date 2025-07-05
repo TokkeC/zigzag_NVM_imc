@@ -1,0 +1,126 @@
+name: Experiment2_1T1R_reram
+# 1T1R array
+
+memories:
+  cells:
+    size: 8 #synaptic cell
+    r_bw: 8 # Reading and Writing them all at once
+    w_bw: 8 # Reading and Writing them all at once
+    r_cost: 0
+    w_cost: 123.51494401050451 # Writing 8 bit weights into the cell, according to the made costmodel
+    area: 0
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 0
+    operands: [I2]
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+    served_dimensions: [] # Fully unrolled
+
+  rf_1B:
+    size: 8
+    r_bw: 8
+    w_bw: 8
+    r_cost: 0.01
+    w_cost: 0.01
+    area: 0
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    operands: [I1]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+    served_dimensions: [D1]
+
+  rf_2B:
+    size: 16
+    r_bw: 16
+    w_bw: 16
+    r_cost: 0.021
+    w_cost: 0.021
+    area: 0
+    r_port: 2
+    w_port: 2
+    rw_port: 0
+    latency: 1
+    operands: [O]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_2
+        th: r_port_2
+    served_dimensions: [D2]
+
+  L1_SRAM_512KB: # L1 memory level - On-chip SRAM buffer
+    size: 4194304 # unit: bit, 512 * 1024 * 8 bits
+    r_bw: 512 # unit: bit
+    w_bw: 512 # unit: bit
+    r_cost: 171.6840 # unit: pJ, per 512 bits read
+    w_cost: 216.6800 # unit: pJ, per 512 bits read
+    area: 1.7892
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    min_r_granularity: 64
+    min_w_granularity: 64
+    operands: [ I1, O ]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_1
+        th: r_port_1
+    served_dimensions: [ D1, D2 ]
+
+  L2_DRAM: # L2 memory level - Off-chip DRAM
+    size: 10000000000
+    r_bw: 64
+    w_bw: 64
+    r_cost: 700 # unit: pJ, per 64 bits read
+    w_cost: 750 # unit: pJ, per 64 bits write
+    area: 0 # off-chip
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 1
+    operands: [ I1, I2, O ]
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+        fl: rw_port_1
+        th: rw_port_1
+    served_dimensions: [ D1, D2 ]
+
+operational_array:
+  is_imc: True
+  is_nvm: True
+  imc_type: analog
+  input_precision: [8, 8] # unit: bit
+  bit_serial_precision: 1 # unit: bit
+  adc_resolution: 4 # unit: bit
+  # Actually the quantization is near 6 bit, but they use a 4 bit ADC with some extra circuitry
+  dimensions: [D1, D2]
+  sizes: [128, 1024] #1024x1024 (but for bits) # [synaptic cols amount, rows amount]
+
+nvm_param:
+  nvm_array_type: 1T1R # array type
+  tech_node: 0.028 # unit: um, 28 nm technology node
+  size_nvm: 1 # unit: bit, SLC
+  V_read: 0.15 # unit: V
+  I_LRS: 0.000004 # unit: A, 4 uA
+  I_HRS: 0.0000001 # unit: A, 0.1 uA
+  V_wl_swing_read: 0.8 # unit: V
+  V_bl_swing_read: 0.15 # unit: V
+  ADC_share_factor: 8 # 64 columns per ADC, 8 synaptic columns per ADC
+  cell_area_F_multiplier: 500
+

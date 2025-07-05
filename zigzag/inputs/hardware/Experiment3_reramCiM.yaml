@@ -19,12 +19,12 @@ memories:
         tl: rw_port_1
     served_dimensions: [ ] # Fully unrolled over all multipliers
 
-  rf_1B:
-    size: 8
-    r_bw: 8
-    w_bw: 8
-    r_cost: 0.010
-    w_cost: 0.010
+  rf_1B: #input regs
+    size: 8 # NEEDED FOR LLAMA
+    r_bw: 8 # NEEDED FOR LLAMA
+    w_bw: 8 # NEEDED FOR LLAMA
+    r_cost: 0.01
+    w_cost: 0.01
     area: 0
     r_port: 1
     w_port: 1
@@ -36,10 +36,10 @@ memories:
         tl: r_port_1
     served_dimensions: [D1]
 
-  rf_2B:
-    size: 16
-    r_bw: 16
-    w_bw: 16
+  rf_2B: # output regs
+    size: 16 # NEEDED FOR LLAMA
+    r_bw: 16 # NEEDED FOR LLAMA
+    w_bw: 16 # NEEDED FOR LLAMA
     r_cost: 0.021
     w_cost: 0.021
     area: 0

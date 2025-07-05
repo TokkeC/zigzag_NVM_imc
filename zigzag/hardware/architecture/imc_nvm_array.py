@@ -574,7 +574,7 @@ class ImcNvmArray(ImcArray):
         tops_peak_bits = nb_of_bit_operations_per_cycle / clock_cycle_period / 1000
         topsw_peak = nb_of_operations_per_cycle / peak_energy_per_cycle
         topsw_peak_bits = nb_of_bit_operations_per_cycle / peak_energy_per_cycle
-        topsmm2_peak = tops_peak / imc_area
+        topsmm2_peak = tops_peak / (imc_area+1.7892) # JUST FOR NOW, TO HAVE THE SYSTEM WIDE TOPS/mm^2
         topsmm2_peak_bits = tops_peak_bits / imc_area
         self.tops_peak_bits = tops_peak_bits
         self.topsw_peak_bits = topsw_peak_bits
@@ -585,9 +585,9 @@ class ImcNvmArray(ImcArray):
         imc_type_info = f"Current macro-level peak performance ({'analog' if self.is_aimc else 'digital'} {self.nvm_array_type} NVM IMC):"
         peak_performance_info = f"TOP/s: {tops_peak}, TOP/s/W: {topsw_peak}, TOP/s/mm^2: {topsmm2_peak}"
         peak_performance_bits_info = f"TOP/s/bit: {tops_peak_bits}, TOP/s/W/bit: {topsw_peak_bits}, TOP/s/mm^2/bit: {topsmm2_peak_bits}"
-        logger.info(imc_type_info)
+        # logger.info(imc_type_info)
         logger.info(peak_performance_info)
-        logger.info(peak_performance_bits_info)
+        # logger.info(peak_performance_bits_info)
 
         return tops_peak, topsw_peak, topsmm2_peak
 

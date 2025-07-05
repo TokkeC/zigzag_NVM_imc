@@ -1,0 +1,128 @@
+name: Experiment3_2T2R_pseudo_crossbar_reram
+# 2T2R Pseudo-Crossbar Array
+
+memories:
+  cells:
+    size: 8 #synaptic cell for mapping
+    r_bw: 8 # Reading and Writing them all at once
+    w_bw: 8 # Reading and Writing them all at once
+    r_cost: 0 #BECAUSE IT IS NVM CIM, IT IS CALCULATED IN THE COST MODEL -> Reading itself no extra energy
+    w_cost: 47.762783226929095 #86.78068 #39.26873290771637 # Writing 4bit weights into the cell
+    area: 0 #0.0000125 # in mm^2 -> THIS ONE REPRESENTS THE CIM CELL SIZE, FOR THE WHOLE 8 CELLS (without the mults)
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 0 # Not on critical path
+    operands: [ I2 ] # weights
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+    served_dimensions: [ ] # Fully unrolled over all multipliers
+
+  rf_1B: #input regs
+    size: 8 # NEEDED FOR LLAMA
+    r_bw: 8 # NEEDED FOR LLAMA
+    w_bw: 8 # NEEDED FOR LLAMA
+    r_cost: 0.01
+    w_cost: 0.01
+    area: 0
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    operands: [I1]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+    served_dimensions: [D1]
+
+  rf_2B: # output regs
+    size: 16 # NEEDED FOR LLAMA
+    r_bw: 16 # NEEDED FOR LLAMA
+    w_bw: 16 # NEEDED FOR LLAMA
+    r_cost: 0.021
+    w_cost: 0.021
+    area: 0
+    r_port: 2
+    w_port: 2
+    rw_port: 0
+    latency: 1
+    operands: [O]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_2
+        th: r_port_2
+    served_dimensions: [D2]
+
+  L1_SRAM_512KB: # L1 memory level - On-chip SRAM buffer
+    size: 4194304 # unit: bit, 512 * 1024 * 8 bits
+    r_bw: 512 # unit: bit
+    w_bw: 512 # unit: bit
+    r_cost: 171.6840 # unit: pJ, per 512 bits read
+    w_cost: 216.6800 # unit: pJ, per 512 bits read
+    area: 1.7892
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    min_r_granularity: 64
+    min_w_granularity: 64
+    operands: [ I1, O ]
+    ports:
+      - fh: w_port_1
+        tl: r_port_1
+      - fh: w_port_1
+        tl: r_port_1
+        fl: w_port_1
+        th: r_port_1
+    served_dimensions: [ D1, D2 ]
+
+  L2_DRAM: # L2 memory level - Off-chip DRAM
+    size: 10000000000
+    r_bw: 64
+    w_bw: 64
+    r_cost: 700 # unit: pJ, per 64 bits read
+    w_cost: 750 # unit: pJ, per 64 bits write
+    area: 0 # off-chip
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 1
+    operands: [ I1, I2, O ]
+    ports:
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+        fl: rw_port_1
+        th: rw_port_1
+    served_dimensions: [ D1, D2 ]
+
+operational_array:
+  is_imc: True
+  is_nvm: True
+  imc_type: analog
+  input_precision: [8, 8] # unit: bit, Inputs and Weights
+  bit_serial_precision: 4 # unit: bit, HOW MANY BITS CAN BE PUT ON THE WORDLINE AT ONCE!!!
+  adc_resolution: 8 # unit: bit, Output precision, SAR ADC -> What is already modeled for normal CIM
+  # Actually the ADC resolution is 8 bit, but due to the relaxed requirements they could shrink them quite a bit
+  dimensions: [D1, D2]
+  sizes: [8, 64]
+
+nvm_param:
+  nvm_array_type: 2T2R_pseudo_crossbar
+  tech_node: 0.028
+  size_nvm: 4 # ReRAM holding 4 bit
+  V_read: 0.130
+#  I_LRS: 0.000004
+#  I_HRS: 0.0000001
+  G_LRS: 0.000009765625
+  G_HRS: 0.000001074219
+  V_wl_swing_read: 1.2
+  V_bl_swing_read: 0.106 # sqrt(0.15^2/2)
+  ADC_share_factor: 4
+  cell_area_F_multiplier: 500
+  # area_access_transistor_mm2: # let is be computed by the framework

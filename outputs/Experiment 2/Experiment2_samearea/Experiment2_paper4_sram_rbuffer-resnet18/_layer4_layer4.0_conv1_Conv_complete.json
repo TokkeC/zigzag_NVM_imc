@@ -1,0 +1,427 @@
+{
+    "outputs": {
+        "memory": {
+            "utilization": {
+                "O": [
+                    1.0,
+                    0.035888671875
+                ],
+                "W": [
+                    1.0,
+                    0.0009838592
+                ],
+                "I": [
+                    1.0,
+                    0.035888671875,
+                    0.0009838592
+                ]
+            },
+            "word_accesses": {
+                "O": [
+                    {
+                        "rd ^": 74970,
+                        "wr v": 74970,
+                        "rd v": 74970,
+                        "wr ^": 74970
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 2388,
+                        "wr ^": 2388
+                    }
+                ],
+                "W": [
+                    {
+                        "rd ^": 0,
+                        "wr v": 1179645,
+                        "rd v": 1179645,
+                        "wr ^": 0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 147465,
+                        "wr ^": 0
+                    }
+                ],
+                "I": [
+                    {
+                        "rd ^": 0,
+                        "wr v": 564480,
+                        "rd v": 564480,
+                        "wr ^": 0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 784,
+                        "rd v": 8820,
+                        "wr ^": 0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 6272,
+                        "wr ^": 0
+                    }
+                ]
+            }
+        },
+        "energy": {
+            "energy_total": 120497293.98828255,
+            "operational_energy": 3928240.6332825604,
+            "operational_energy_breakdown": {
+                "local_bl_precharging": 0,
+                "dacs": 0.0,
+                "adcs": 1561673.13555456,
+                "mults": 1048773.132288,
+                "analog_bl_addition": 1158020.333568,
+                "adders_regular": 0,
+                "adders_pv": 98322.48115199998,
+                "accumulators": 61451.55071999999
+            },
+            "memory_energy": 116569053.35499999,
+            "memory_energy_breakdown_per_level": {
+                "O": [
+                    6297.4800000000005,
+                    5432700
+                ],
+                "W": [
+                    112066.275,
+                    103225500
+                ],
+                "I": [
+                    11289.6,
+                    3390800,
+                    4390400
+                ]
+            },
+            "memory_energy_breakdown_per_level_per_operand": {
+                "O": [
+                    {
+                        "rd ^": 1574.3700000000001,
+                        "wr v": 1574.3700000000001,
+                        "rd v": 1574.3700000000001,
+                        "wr ^": 1574.3700000000001
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 477600,
+                        "wr ^": 4955100
+                    }
+                ],
+                "W": [
+                    {
+                        "rd ^": 0,
+                        "wr v": 112066.275,
+                        "rd v": 0,
+                        "wr ^": 0.0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 103225500,
+                        "wr ^": 0
+                    }
+                ],
+                "I": [
+                    {
+                        "rd ^": 0.0,
+                        "wr v": 5644.8,
+                        "rd v": 5644.8,
+                        "wr ^": 0.0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 1626800,
+                        "rd v": 1764000,
+                        "wr ^": 0
+                    },
+                    {
+                        "rd ^": 0,
+                        "wr v": 0,
+                        "rd v": 4390400,
+                        "wr ^": 0
+                    }
+                ]
+            }
+        },
+        "latency": {
+            "data_onloading": 9792.0,
+            "computation": 142954.0,
+            "data_offloading": 4.0,
+            "computation_breakdown": {
+                "mac_computation": 5880.0,
+                "memory_stalling": 137074
+            }
+        },
+        "clock": {
+            "tclk (ns)": 26.975479999999997,
+            "tclk_breakdown (ns)": {
+                "cells": 0,
+                "dacs": 0,
+                "adcs": 24.70976,
+                "mults": 0.0478,
+                "adders_regular": 0,
+                "adders_pv": 1.3384,
+                "accumulators": 0.8795200000000001
+            }
+        },
+        "area (mm^2)": {
+            "total_area": 2.428269108673493,
+            "total_area_breakdown:": {
+                "imc_area": 0.6390691086734932,
+                "mem_area": 1.7892
+            },
+            "total_area_breakdown_further": {
+                "imc_area_breakdown": {
+                    "cells": 0,
+                    "dacs": 0,
+                    "adcs": 0.15520861907349315,
+                    "mults": 0.441529856,
+                    "adders_regular": 0,
+                    "adders_pv": 0.0243674496,
+                    "accumulators": 0.017963184
+                },
+                "mem_area_breakdown": {
+                    "cells": 0,
+                    "rf_1B": 0,
+                    "rf_2B": 0,
+                    "L1_ReRAM_2MB": 1.7892,
+                    "L2_DRAM": 0
+                }
+            }
+        },
+        "spatial": {
+            "mac_utilization": {
+                "ideal": 0.8761904761904762,
+                "stalls": 0.03603956517481148,
+                "stalls_onloading": 0.03372919749126,
+                "stalls_onloading_offloading": 0.033728314238952534
+            }
+        }
+    },
+    "inputs": {
+        "accelerator": {
+            "id": 0,
+            "name": "Experiment2_1T1R_sram_rbuffer-removing-nouse-mem",
+            "operational_array": {
+                "operational_unit: ImcArray, dimensions": {
+                    "D1": 106,
+                    "D2": 848
+                }
+            },
+            "memory_hierarchy": [
+                "MemoryLevel(instance=cells,operands=[I2], served_dimensions=set())",
+                "MemoryLevel(instance=rf_1B,operands=[I1], served_dimensions={D1})",
+                "MemoryLevel(instance=rf_2B,operands=[O], served_dimensions={D2})",
+                "MemoryLevel(instance=L1_ReRAM_2MB,operands=[I1, O], served_dimensions={D1, D2})",
+                "MemoryLevel(instance=L2_DRAM,operands=[I1, I2], served_dimensions={D1, D2})"
+            ],
+            "mem_hierarchy_dict": {
+                "I2": [
+                    "MemoryLevel(instance=cells,operands=[I2], served_dimensions=set())",
+                    "MemoryLevel(instance=L2_DRAM,operands=[I1, I2], served_dimensions={D1, D2})"
+                ],
+                "I1": [
+                    "MemoryLevel(instance=rf_1B,operands=[I1], served_dimensions={D1})",
+                    "MemoryLevel(instance=L1_ReRAM_2MB,operands=[I1, O], served_dimensions={D1, D2})",
+                    "MemoryLevel(instance=L2_DRAM,operands=[I1, I2], served_dimensions={D1, D2})"
+                ],
+                "O": [
+                    "MemoryLevel(instance=rf_2B,operands=[O], served_dimensions={D2})",
+                    "MemoryLevel(instance=L1_ReRAM_2MB,operands=[I1, O], served_dimensions={D1, D2})"
+                ]
+            },
+            "dataflows": null,
+            "mem_size_dict": {
+                "I2": [
+                    8,
+                    10000000000
+                ],
+                "I1": [
+                    8,
+                    16777216,
+                    10000000000
+                ],
+                "O": [
+                    16,
+                    16777216
+                ]
+            },
+            "mem_r_bw_dict": {
+                "I2": [
+                    8,
+                    64
+                ],
+                "I1": [
+                    8,
+                    512,
+                    64
+                ],
+                "O": [
+                    16,
+                    512
+                ]
+            },
+            "mem_w_bw_dict": {
+                "I2": [
+                    8,
+                    64
+                ],
+                "I1": [
+                    8,
+                    512,
+                    64
+                ],
+                "O": [
+                    16,
+                    512
+                ]
+            },
+            "mem_r_bw_min_dict": {
+                "I2": [
+                    8,
+                    64
+                ],
+                "I1": [
+                    8,
+                    64,
+                    64
+                ],
+                "O": [
+                    16,
+                    64
+                ]
+            },
+            "mem_w_bw_min_dict": {
+                "I2": [
+                    8,
+                    64
+                ],
+                "I1": [
+                    8,
+                    64,
+                    64
+                ],
+                "O": [
+                    16,
+                    64
+                ]
+            },
+            "mem_sharing_list": [
+                {
+                    "I1": 2,
+                    "I2": 1
+                },
+                {
+                    "I1": 1,
+                    "O": 1
+                }
+            ]
+        },
+        "layer": {
+            "name": "/layer4/layer4.0/conv1/Conv",
+            "type": "Conv",
+            "equation": "O[b][g][k][oy][ox] = W[g][k][c][fy][fx] * I[b][g][c][iy][ix]",
+            "equation_relations": [
+                "IX = 2*OX + 1*FX",
+                "IY = 2*OY + 1*FY"
+            ],
+            "loop_dimensions": {
+                "B": 1,
+                "K": 512,
+                "G": 1,
+                "OX": 7,
+                "OY": 7,
+                "C": 256,
+                "FX": 3,
+                "FY": 3
+            },
+            "operand_precision": {
+                "W": 8,
+                "I": 8,
+                "O_final": 8,
+                "O": 16
+            },
+            "user_spatial_mapping": {
+                "D1": {
+                    "K": 106
+                },
+                "D2": {
+                    "FX": 3,
+                    "C": 256
+                }
+            },
+            "memory_operand_links": {
+                "O": "O",
+                "W": "I2",
+                "I": "I1"
+            }
+        },
+        "spatial_mapping": {
+            "O": [
+                [
+                    "(FX, 3)",
+                    "(C, 256)"
+                ],
+                [
+                    "(K, 102)"
+                ],
+                []
+            ],
+            "W": [
+                [],
+                [
+                    "(K, 102)",
+                    "(FX, 3)",
+                    "(C, 256)"
+                ],
+                []
+            ],
+            "I": [
+                [
+                    "(K, 102)"
+                ],
+                [
+                    "(FX, 3)",
+                    "(C, 256)"
+                ],
+                [],
+                []
+            ]
+        },
+        "temporal_mapping": {
+            "O": [
+                [],
+                [
+                    "(OY, 7)",
+                    "(OX, 7)",
+                    "(K, 5)",
+                    "(FY, 3)"
+                ]
+            ],
+            "W": [
+                [
+                    "(OY, 7)",
+                    "(OX, 7)"
+                ],
+                [
+                    "(K, 5)",
+                    "(FY, 3)"
+                ]
+            ],
+            "I": [
+                [],
+                [
+                    "(OY, 7)",
+                    "(OX, 7)",
+                    "(K, 5)",
+                    "(FY, 3)"
+                ],
+                []
+            ]
+        }
+    }
+}

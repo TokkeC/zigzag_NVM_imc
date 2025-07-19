@@ -164,4 +164,4 @@ zigzag/cacti/cacti_master/*.yaml
 
 # .sh files
 *.sh
-/outputs/
+#/outputs/
